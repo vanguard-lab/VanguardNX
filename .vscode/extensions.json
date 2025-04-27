@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "nrwl.angular-console",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "mhutchie.git-graph",
+    "usernamehw.errorlens"
+  ]
+}

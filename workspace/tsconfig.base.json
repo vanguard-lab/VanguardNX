@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@vanguard-nx/core": ["libs/shared-core-lib/src/index.ts"],
+      "@vanguard-nx/utils": ["libs/shared-utils-lib/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"],
+  "editor.formatOnSave": true,
+  "prettier.enable": true
+}
