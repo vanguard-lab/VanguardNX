@@ -11,19 +11,16 @@ import * as bodyParser from 'body-parser';
 const PKG_VERSION = process.env?.npm_package_version ?? '1.0';
 const PKG_NAME = process.env?.npm_package_name ?? 'api-bootstrap';
 const GLOBAL_VERSION = '1';
-
+const PORT = 3000;
 // TODO: move this to env
 const apiConfig = {
-  domain: 'http://localhost:3000',
+  domain: `http://localhost:${PORT}`,
   host: '0.0.0.0',
-  port: 3000,
+  port: PORT,
   globalPrefix: 'users',
 };
 async function bootstrap(): Promise<void> {
-  const context = await NestFactory.createApplicationContext(
-    UsersModule.forRoot(),
-    { bufferLogs: true }
-  );
+  const context = await NestFactory.createApplicationContext(UsersModule.forRoot(), { bufferLogs: true });
   const logger = context.get<Logger>(Logger);
 
   await context.close();
@@ -31,9 +28,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(UsersModule.forRoot());
 
   app.setGlobalPrefix(apiConfig.globalPrefix, {
-    exclude: [
-      { path: EMPTY_STR, method: RequestMethod.GET, version: EMPTY_STR },
-    ],
+    exclude: [{ path: EMPTY_STR, method: RequestMethod.GET, version: EMPTY_STR }],
   });
   app.enableVersioning({
     type: VersioningType.URI,
@@ -51,26 +46,16 @@ async function bootstrap(): Promise<void> {
   await app.startAllMicroservices();
   logger.log(`Microservice started`);
 
-  await app.listen(3000);
-  logger.log(
-    `Application is running on: http://${apiConfig.host}:${apiConfig.port}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`
-  );
-  logger.log(
-    `Global URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`
-  );
-  logger.log(
-    `Documentation URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/docs`
-  );
+  await app.listen(PORT);
+  logger.log(`Application is running on: http://${apiConfig.host}:${apiConfig.port}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`);
+  logger.log(`Global URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`);
+  logger.log(`Documentation URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/docs`);
 }
 
 function addSwagger(app: INestApplication, globalPrefix: string): void {
-  const swagger = new DocumentBuilder()
-    .setTitle(`Users MS`)
-    .setDescription(`${PKG_NAME.toLocaleUpperCase()} Documentation`)
-    .setVersion(PKG_VERSION)
-    .build();
+  const swagger = new DocumentBuilder().setTitle(`Users MS`).setDescription(`${PKG_NAME.toLocaleUpperCase()} Documentation`).setVersion(PKG_VERSION).build();
   const document = SwaggerModule.createDocument(app, swagger);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
 }
 
-bootstrap();
+void bootstrap();

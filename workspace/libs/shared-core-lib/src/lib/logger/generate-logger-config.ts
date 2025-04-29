@@ -1,8 +1,7 @@
- 
-import type { Params } from "nestjs-pino";
-import { isLocal } from "../tools";
-import { EMPTY_STR, isNilOrEmpty } from "@vanguard-nx/utils";
-import { RequestMethod } from "@nestjs/common";
+import { RequestMethod } from '@nestjs/common';
+import { EMPTY_STR, isNilOrEmpty } from '@vanguard-nx/utils';
+import type { Params } from 'nestjs-pino';
+import { isLocal } from '../tools';
 
 const HOME_REQ_DATA = { path: EMPTY_STR, method: RequestMethod.GET };
 
@@ -12,11 +11,11 @@ const getTransport = (): any => {
   }
 
   return {
-    target: "pino-pretty",
+    target: 'pino-pretty',
     options: {
       colorize: true,
-      translateTime: "SYS:yyyy-mm-dd HH:MM:ss.l",
-      ignore: "pid,hostname,req.headers",
+      translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
+      ignore: 'pid,hostname,req.headers',
     },
   };
 };
@@ -24,7 +23,7 @@ const getTransport = (): any => {
 export const generateLoggerConfig = (): Params => {
   const result: Params = {
     pinoHttp: {
-      level: "debug",
+      level: 'debug',
       transport: getTransport(),
     },
   };

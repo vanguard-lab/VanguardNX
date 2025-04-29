@@ -1,10 +1,13 @@
-import { isArray, isObject } from "@vanguard-nx/utils";
-import { RpcException } from "@nestjs/microservices";
+import { RpcException } from '@nestjs/microservices';
+import { isArray, isObject } from '@vanguard-nx/utils';
 
 export class RpcBaseException extends RpcException {
   public readonly payload: string | Record<string, unknown>;
+
   public readonly status: number;
+
   public readonly type: string;
+
   public readonly isRpc = true;
 
   constructor(payload: string | Record<string, any>, status: number, errorType?: string) {
@@ -40,6 +43,6 @@ export class RpcBaseException extends RpcException {
       return { statusCode, message: description };
     }
 
-    return isObject(objectOrError) && !isArray(objectOrError) ? (objectOrError as object) : { statusCode, message: objectOrError, error: description };
+    return isObject(objectOrError) && !isArray(objectOrError) ? objectOrError : { statusCode, message: objectOrError, error: description };
   }
 }

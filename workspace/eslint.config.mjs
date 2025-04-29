@@ -9,8 +9,11 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default [
-  ...tseslint.configs.recommended,
-  stylistic.configs.recommended,
+  ...tseslint.config(tseslint.configs.recommended, stylistic.configs.recommended, {
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  }),
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   {
