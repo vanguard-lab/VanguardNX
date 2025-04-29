@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
         "automapper",
-        "ntegral"
+        "ntegral",
+        "pageable"
     ],
     "nxConsole.nxWorkspacePath": "workspace",
     "[helm]": {
@@ -45,5 +46,9 @@
         }
     ],
     "eslint.nodePath": "node_modules",
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.format.enable": true,
+    "eslint.ignoreUntitled": true,
+    "eslint.useESLintClass": true,
+    "eslint.useFlatConfig": true
 }
