@@ -1,54 +1,32 @@
 {
-    "cSpell.words": [
-        "automapper",
-        "ntegral",
-        "pageable"
-    ],
-    "nxConsole.nxWorkspacePath": "workspace",
-    "[helm]": {
-        "editor.formatOnSave": false
-    },
-    "editor.formatOnSave": false,
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-    },
-    "eslint.experimental.useFlatConfig": true,
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
-    },
-    "eslint.rules.customizations": [
-        {
-            "rule": "*",
-            "severity": "warn"
-        },
-        {
-            "rule": "*-indent",
-            "severity": "off"
-        },
-        {
-            "rule": "*-spacing",
-            "severity": "off"
-        },
-        {
-            "rule": "*-newline",
-            "severity": "off"
-        }
-    ],
-    "eslint.nodePath": "node_modules",
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "eslint.format.enable": true,
-    "eslint.ignoreUntitled": true,
-    "eslint.useESLintClass": true,
-    "eslint.useFlatConfig": true
+  "cSpell.words": ["automapper", "ntegral",],
+  "nxConsole.nxWorkspacePath": "workspace",
+  "[helm]": {
+    "editor.formatOnSave": false
+  },
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.format.enable": true,
+  "eslint.ignoreUntitled": true,
+  "eslint.useFlatConfig": true,
+  
+  "eslint.useESLintClass": true,
+  "eslint.workingDirectories": [
+    { "pattern": "./apps/*/" },
+    { "pattern": "./libs/*/" }
+  ]
 }

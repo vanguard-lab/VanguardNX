@@ -9,35 +9,12 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default [
-  ...tseslint.config(tseslint.configs.recommended, stylistic.configs.recommended, {
-    rules: {
-      '@typescript-eslint/no-require-imports': 'off',
-    },
-  }),
+  stylistic.configs.recommended,
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   {
     ignores: ['**/dist', '**/node_modules', '**/*.d.ts', '**/.*', '**/migrations/*-migration.ts'],
   },
-  {
-    files: ['**/*.ts'],
-    rules: {
-      '@nx/enforce-module-boundaries': [
-        'error',
-        {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
-        },
-      ],
-    },
-  },
-
   {
     files: ['apps/**/*.ts', 'libs/**/*.ts'],
     languageOptions: {
@@ -54,12 +31,16 @@ export default [
       '@typescript-eslint': tseslint.plugin,
       'unused-imports': pluginUnusedImports,
     },
+    files: ['**/*.ts'],
+    ignores: ['**/dist', '**/node_modules', '**/*.d.ts', '**/.*', '**/migrations/*-migration.ts'],
     rules: {
+      ...tseslint.configs.eslintRecommended.rules,
+      '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/promise-function-async': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      '@stylistic/ts/lines-between-class-members': ['warn', 'always', { exceptAfterOverload: true }],
+      '@stylistic/ts/lines-between-class-members': ['warn', 'always', { exceptAfterOverload: true, exceptAfterSingleLine: false }],
       'unused-imports/no-unused-imports': 'warn',
       'unused-imports/no-unused-vars': [
         'warn',
@@ -180,14 +161,32 @@ export default [
       ],
       '@typescript-eslint/no-useless-empty-export': ['error'],
       '@typescript-eslint/unbound-method': ['warn'],
+      '@stylistic/ts/padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: 'function' },
+        { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
+      ],
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          enforceBuildableLibDependency: true,
+          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
+          depConstraints: [
+            {
+              sourceTag: '*',
+              onlyDependOnLibsWithTags: ['*'],
+            },
+          ],
+        },
+      ],
     },
   },
   {
-    files: ['libs/**/*.ts', 'libs/**/*.tsx'],
+    files: ['libs/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
     },
   },
 ];
