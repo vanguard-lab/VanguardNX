@@ -19,6 +19,7 @@ const apiConfig = {
   port: PORT,
   globalPrefix: 'users',
 };
+
 async function bootstrap(): Promise<void> {
   const context = await NestFactory.createApplicationContext(UsersModule.forRoot(), { bufferLogs: true });
   const logger = context.get<Logger>(Logger);

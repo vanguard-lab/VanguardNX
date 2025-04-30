@@ -6,9 +6,7 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 @QueryHandlerStrict(GetUserQuery)
 export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, User> {
-  constructor(
-    @InjectPinoLogger(GetUserQueryHandler.name) private logger: PinoLogger
-  ) {}
+  constructor(@InjectPinoLogger(GetUserQueryHandler.name) private logger: PinoLogger) {}
 
   public async execute(query: GetUserQuery): Promise<User> {
     this.logger.info(`Executing Query "${GetUserQueryHandler.name}"`);
