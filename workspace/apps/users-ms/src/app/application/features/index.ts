@@ -1,3 +1,5 @@
+export * from './users';
+
 import { UsersController, UsersMapperProfile } from './users';
 import UsersQueryHandler from './users/queries';
 
