@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-import { EMAIL_MAX_LEN, END_USER_SCHEMA, PK_NAME, TABLE_NAME, USERNAME_MAX_LEN } from './db-user-constants';
+import { EMAIL_MAX_LEN, END_USER_SCHEMA, PK_NAME, TABLE_NAME, USERNAME_MAX_LEN } from '../constants';
 
 @Entity({ schema: END_USER_SCHEMA, name: TABLE_NAME })
 export class UserEntity {
