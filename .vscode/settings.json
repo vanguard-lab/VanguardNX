@@ -1,16 +1,19 @@
 {
-  "cSpell.words": ["automapper", "ntegral",],
+  "cSpell.words": [
+    "automapper",
+    "cockroachdb",
+    "healthcheck",
+    "MILLIS",
+    "ntegral",
+    "roachnet"
+  ],
   "nxConsole.nxWorkspacePath": "workspace",
   "[helm]": {
     "editor.formatOnSave": false
   },
-  "editor.formatOnSave": false,
+
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.formatOnSave": true
   },
 
@@ -23,10 +26,19 @@
   "eslint.format.enable": true,
   "eslint.ignoreUntitled": true,
   "eslint.useFlatConfig": true,
-  
+
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "eslint.onIgnoredFiles": "warn",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
   "eslint.useESLintClass": true,
-  "eslint.workingDirectories": [
-    { "pattern": "./apps/*/" },
-    { "pattern": "./libs/*/" }
-  ]
+  "eslint.workingDirectories": ["./"],
+  "eslint.options": {
+    "extensions": [".js", ".ts"]
+  }
 }
