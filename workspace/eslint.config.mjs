@@ -1,5 +1,4 @@
 import nx from '@nx/eslint-plugin';
-import stylistic from '@stylistic/eslint-plugin';
 import stylisticTs from '@stylistic/eslint-plugin-ts';
 import pluginUnusedImports from 'eslint-plugin-unused-imports';
 import path from 'path';
@@ -9,13 +8,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default [
-  stylistic.configs.recommended,
   ...nx.configs['flat/base'],
-  ...nx.configs['flat/typescript'],
   {
     ignores: ['**/dist', '**/node_modules', '**/*.d.ts', '**/.*', '**/migrations/*-migration.ts'],
-  },
-  {
     files: ['apps/**/*.ts', 'libs/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
@@ -26,56 +21,37 @@ export default [
       },
     },
     plugins: {
-      '@stylistic': stylistic,
       '@stylistic/ts': stylisticTs,
       '@typescript-eslint': tseslint.plugin,
       'unused-imports': pluginUnusedImports,
     },
-    files: ['**/*.ts'],
-    ignores: ['**/dist', '**/node_modules', '**/*.d.ts', '**/.*', '**/migrations/*-migration.ts'],
     rules: {
-      ...tseslint.configs.eslintRecommended.rules,
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/promise-function-async': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@stylistic/ts/lines-between-class-members': ['warn', 'always', { exceptAfterOverload: true, exceptAfterSingleLine: false }],
-      'unused-imports/no-unused-imports': 'warn',
-      'unused-imports/no-unused-vars': [
-        'warn',
+      '@nx/enforce-module-boundaries': [
+        'error',
         {
-          vars: 'all',
-          varsIgnorePattern: '^_',
-          args: 'after-used',
-          argsIgnorePattern: '^_',
+          enforceBuildableLibDependency: true,
+          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
+          depConstraints: [
+            {
+              sourceTag: '*',
+              onlyDependOnLibsWithTags: ['*'],
+            },
+          ],
         },
       ],
-      '@typescript-eslint/consistent-type-exports': 'off',
-      '@typescript-eslint/consistent-type-imports': 'off',
-      '@typescript-eslint/no-explicit-any': [
-        'warn',
+      '@typescript-eslint/adjacent-overload-signatures': ['warn'],
+      '@typescript-eslint/await-thenable': ['error'],
+      '@typescript-eslint/ban-types': ['off'],
+      '@typescript-eslint/consistent-generic-constructors': ['warn', 'constructor'],
+      '@typescript-eslint/consistent-indexed-object-style': ['off'],
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
         {
-          fixToUnknown: false,
-          ignoreRestArgs: true,
+          assertionStyle: 'as',
+          objectLiteralTypeAssertions: 'allow-as-parameter',
         },
       ],
-      '@typescript-eslint/no-non-null-assertion': ['off'],
-      '@typescript-eslint/no-empty-interface': [
-        'warn',
-        {
-          allowSingleExtends: true,
-        },
-      ],
-      '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
-      '@typescript-eslint/explicit-function-return-type': [
-        'warn',
-        {
-          allowExpressions: true,
-          allowHigherOrderFunctions: true,
-        },
-      ],
-      '@typescript-eslint/explicit-module-boundary-types': 'warn',
+      '@typescript-eslint/default-param-last': ['error'],
       '@typescript-eslint/explicit-member-accessibility': [
         'error',
         {
@@ -89,6 +65,14 @@ export default [
           },
         },
       ],
+      '@typescript-eslint/explicit-function-return-type': [
+        'warn',
+        {
+          allowExpressions: true,
+          allowHigherOrderFunctions: true,
+        },
+      ],
+      '@typescript-eslint/explicit-module-boundary-types': ['warn'],
       '@typescript-eslint/member-ordering': [
         'warn',
         {
@@ -121,30 +105,46 @@ export default [
           ],
         },
       ],
-      '@typescript-eslint/consistent-type-assertions': [
-        'error',
-        {
-          assertionStyle: 'as',
-          objectLiteralTypeAssertions: 'allow-as-parameter',
-        },
-      ],
-      '@typescript-eslint/no-unnecessary-type-assertion': ['warn'],
-      '@typescript-eslint/no-unnecessary-type-arguments': ['warn'],
+
+      '@typescript-eslint/no-floating-promises': ['error'],
+      '@typescript-eslint/promise-function-async': ['error'],
       '@typescript-eslint/no-confusing-non-null-assertion': ['warn'],
       '@typescript-eslint/no-confusing-void-expression': ['error'],
-      '@typescript-eslint/no-redundant-type-constituents': ['warn'],
-      '@typescript-eslint/switch-exhaustiveness-check': ['warn'],
-      '@typescript-eslint/restrict-plus-operands': [
-        'error',
+      '@typescript-eslint/no-dupe-class-members': ['error'],
+      '@typescript-eslint/no-duplicate-enum-values': ['error'],
+      '@typescript-eslint/no-empty-function': ['warn'],
+      '@typescript-eslint/no-empty-interface': [
+        'warn',
         {
-          allowAny: true,
+          allowSingleExtends: true,
         },
       ],
-      'no-throw-literal': 'off',
-      '@typescript-eslint/only-throw-error': 'error',
-      '@typescript-eslint/prefer-enum-initializers': ['error'],
-      '@typescript-eslint/prefer-includes': ['warn'],
-      '@typescript-eslint/prefer-string-starts-ends-with': ['warn'],
+      '@typescript-eslint/no-empty-object-type': [
+        'warn',
+        {
+          allowInterfaces: 'with-single-extends',
+          allowObjectTypes: 'never',
+        },
+      ],
+      '@typescript-eslint/no-explicit-any': [
+        'warn',
+        {
+          fixToUnknown: false,
+          ignoreRestArgs: true,
+        },
+      ],
+      '@typescript-eslint/no-extra-non-null-assertion': ['error'],
+      '@typescript-eslint/no-for-in-array': ['error'],
+      '@typescript-eslint/no-implied-eval': ['error'],
+      '@typescript-eslint/no-inferrable-types': [
+        'warn',
+        {
+          ignoreParameters: true,
+          ignoreProperties: false,
+        },
+      ],
+      '@typescript-eslint/no-invalid-this': ['error'],
+      '@typescript-eslint/no-loss-of-precision': ['error'],
       '@typescript-eslint/no-magic-numbers': [
         'warn',
         {
@@ -159,24 +159,70 @@ export default [
           detectObjects: true,
         },
       ],
+      '@typescript-eslint/no-misused-new': ['error'],
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksConditionals: true,
+          checksSpreads: true,
+        },
+      ],
+      '@typescript-eslint/no-non-null-asserted-nullish-coalescing': ['warn'],
+      '@typescript-eslint/no-non-null-asserted-optional-chain': ['warn'],
+      '@typescript-eslint/no-non-null-assertion': ['off'],
+      '@typescript-eslint/no-redundant-type-constituents': ['warn'],
+      '@typescript-eslint/no-require-imports': ['off'],
+      '@typescript-eslint/no-this-alias': ['error', { allowDestructuring: false }],
+      '@typescript-eslint/only-throw-error': ['error'],
+      '@typescript-eslint/no-unnecessary-boolean-literal-compare': [
+        'warn',
+        {
+          allowComparingNullableBooleansToTrue: false,
+          allowComparingNullableBooleansToFalse: false,
+        },
+      ],
+      '@typescript-eslint/no-unnecessary-type-arguments': ['warn'],
+      '@typescript-eslint/no-unnecessary-type-assertion': ['warn'],
       '@typescript-eslint/no-useless-empty-export': ['error'],
+      '@typescript-eslint/no-use-before-define': [
+        'error',
+        {
+          functions: false,
+          classes: true,
+          variables: true,
+          allowNamedExports: false,
+        },
+      ],
+      '@typescript-eslint/no-useless-constructor': ['off'],
+      '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
+      '@typescript-eslint/prefer-enum-initializers': ['error'],
+      '@typescript-eslint/prefer-includes': ['warn'],
+      '@typescript-eslint/prefer-string-starts-ends-with': ['warn'],
+      '@typescript-eslint/restrict-plus-operands': [
+        'error',
+        {
+          skipCompoundAssignments: false,
+          allowAny: true,
+        },
+      ],
+      '@typescript-eslint/switch-exhaustiveness-check': ['warn'],
       '@typescript-eslint/unbound-method': ['warn'],
+
+      '@stylistic/ts/lines-between-class-members': ['warn', 'always', { exceptAfterOverload: true, exceptAfterSingleLine: false }],
       '@stylistic/ts/padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: '*', next: 'function' },
         { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
       ],
-      '@nx/enforce-module-boundaries': [
-        'error',
+
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
+        'warn',
         {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
         },
       ],
     },
