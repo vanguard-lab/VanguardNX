@@ -28,6 +28,6 @@ export const generateLoggerConfig = (): Params => {
     },
   };
 
-  result.exclude = isNilOrEmpty(result?.exclude) ? [HOME_REQ_DATA] : [HOME_REQ_DATA, ...result.exclude];
+  result.exclude = isNilOrEmpty(result?.exclude) ? [HOME_REQ_DATA] : [HOME_REQ_DATA, ...(result.exclude ?? [])];
   return result;
 };

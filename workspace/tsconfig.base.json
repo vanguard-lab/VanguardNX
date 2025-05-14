@@ -1,9 +1,9 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
+    "types": ["node"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "strictNullChecks": true,
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -21,7 +21,9 @@
       "@vanguard-nx/utils": ["libs/shared-utils-lib/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"],
+
   "editor.formatOnSave": true,
-  "prettier.enable": true
+  "prettier.enable": true,
+  "compileOnSave": false,
+  "exclude": ["node_modules", "tmp"]
 }
