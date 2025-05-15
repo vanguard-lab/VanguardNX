@@ -1,0 +1,42 @@
+services:
+ 
+  roach1:
+    image: cockroachdb/cockroach:latest
+    container_name: roach1
+    hostname: roach1
+    ports:
+      - "26257:26257"  # SQL client port
+      - "8080:8080"    # Admin UI port
+    volumes:
+      - ./docker/tmp/cockroach:/cockroach/cockroach-data
+    command: start-single-node --insecure
+    restart: unless-stopped
+    networks:
+      - roachnet
+    healthcheck:
+      test: ["CMD", "cockroach", "node", "status", "--host=localhost", "--insecure"]
+      interval: 3s
+      timeout: 3s
+      retries: 2
+  # db-init:
+  #   image: cockroachdb/cockroach:latest
+  #   depends_on:
+  #     roach1:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./docker/certs:/cockroach/certs
+  #     - ./docker/database/init-cockroachdb.sh:/init-cockroachdb.sh
+  #   environment:
+  #     - DATABASES=user_db,test_db
+  #     - DB_USER=apiAce
+  #     - DB_PASSWORD=vanguardNX
+  #     - WEB_UI_USER=vanguard
+  #     - WEB_UI_PASSWORD=vanguardNX
+  #   entrypoint: ["sh", "-c", "chmod +x /init-cockroachdb.sh && /init-cockroachdb.sh"]
+  #   networks:
+  #     - roachnet
+  #   restart: "no"
+
+networks:
+  roachnet:
+    driver: bridge

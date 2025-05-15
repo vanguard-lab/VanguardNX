@@ -1,3 +1,4 @@
+export * from './constants';
 export * from './options';
 export * from './type-orm.config';
 export * from './entities';

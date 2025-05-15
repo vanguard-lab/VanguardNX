@@ -1,0 +1,528 @@
+diff --git a/workspace/apps/users-ms/src/app/db/index.ts b/workspace/apps/users-ms/src/app/db/index.ts
+index dada727..a4f3c11 100644
+--- a/workspace/apps/users-ms/src/app/db/index.ts
++++ b/workspace/apps/users-ms/src/app/db/index.ts
+@@ -1,3 +1,4 @@
++export * from './constants';
+ export * from './options';
+ export * from './type-orm.config';
+ export * from './entities';
+diff --git a/workspace/apps/users-ms/src/app/db/user.database.module.ts b/workspace/apps/users-ms/src/app/db/user.database.module.ts
+index 0965069..23fa67c 100644
+--- a/workspace/apps/users-ms/src/app/db/user.database.module.ts
++++ b/workspace/apps/users-ms/src/app/db/user.database.module.ts
+@@ -7,6 +7,7 @@ import { generateDataSourceOptions } from './type-orm.config';
+ import Entities from './entities';
+ import { USER_REPO } from '../application';
+ import { UserRepo } from './repositories';
++import { EntityMapperProfile } from './mappers';
+ 
+ @Module({})
+ export class UserDatabaseModule {
+@@ -35,8 +36,10 @@ export class UserDatabaseModule {
+           provide: USER_REPO,
+           useClass: UserRepo,
+         },
++        EntityMapperProfile,
+       ],
+-      exports: [USER_REPO],
++
++      exports: [USER_REPO, EntityMapperProfile],
+     };
+   }
+ }
+diff --git a/workspace/libs/shared-core-lib/src/lib/exceptions/base/index.ts b/workspace/libs/shared-core-lib/src/lib/exceptions/base/index.ts
+index 8a59c59..4e522f7 100644
+--- a/workspace/libs/shared-core-lib/src/lib/exceptions/base/index.ts
++++ b/workspace/libs/shared-core-lib/src/lib/exceptions/base/index.ts
+@@ -2,4 +2,3 @@ export * from './argument-nil.exception';
+ export * from './rpc-bad-request.exception';
+ export * from './rpc-base.exception';
+ export * from './rpc-internal-server-error.exception';
+-export * from './rpc-not-implemented.exception';
+diff --git a/workspace/package.json b/workspace/package.json
+index e43c980..80046c5 100644
+--- a/workspace/package.json
++++ b/workspace/package.json
+@@ -3,7 +3,14 @@
+   "version": "0.0.0",
+   "license": "MIT",
+   "scripts": {
+-    "users-ms:start": "nx run-many --parallel --target=serve --projects=users-ms"
++    "typeorm": "ts-node -r tsconfig-paths/register -P  ./libs/shared-core-lib/tsconfig.lib.json ./node_modules/typeorm/cli.js",
++    "users:start": "nx run-many --parallel --target=serve --projects=users-ms",
++    "users:migration:show": "npm run typeorm migration:show -- -d ./apps/users-ms/src/app/db/type-orm.config.ts",
++    "users:migration:up": "npm run typeorm migration:run -- -d ./apps/users-ms/src/app/db/type-orm.config.ts --transaction=none",
++    "users:migration:generate": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts migration:generate ./apps/users-ms/src/app/db/migrations/migration",
++    "users:migration:create": "npm run typeorm -- migration:create ./apps/users-ms/src/app/db/migrations/migration",
++    "users:migration:down": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts migration:revert",
++    "users:schema:drop": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts schema:drop"
+   },
+   "private": true,
+   "dependencies": {
+@@ -17,6 +24,7 @@
+     "@nestjs/microservices": "^11.0.20",
+     "@nestjs/platform-express": "^11.0.1",
+     "@nestjs/swagger": "^11.1.5",
++    "@nestjs/typeorm": "^11.0.0",
+     "@ntegral/nestjs-sentry": "^4.0.1",
+     "axios": "^1.6.0",
+     "body-parser": "^2.2.0",
+@@ -24,12 +32,15 @@
+     "change-case": "^5.4.4",
+     "class-transformer": "^0.5.1",
+     "class-validator": "^0.14.1",
++    "dotenv": "^16.5.0",
+     "lodash": "^4.17.21",
+     "nestjs-pino": "^4.4.0",
++    "pg": "^8.15.6",
+     "reflect-metadata": "^0.1.13",
+     "rxjs": "^7.8.0",
+     "string-ts": "^2.2.1",
+     "typeorm": "^0.3.22",
++    "typeorm-naming-strategies": "^4.1.0",
+     "uuid": "^11.1.0"
+   },
+   "devDependencies": {
+@@ -50,14 +61,16 @@
+     "@swc/core": "~1.5.7",
+     "@swc/helpers": "~0.5.11",
+     "@types/lodash": "^4.17.16",
+-    "@types/node": "~18.16.9",
++    "@types/node": "~18.16.20",
+     "@typescript-eslint/eslint-plugin": "^8.31.0",
+     "@typescript-eslint/parser": "^8.31.0",
+     "eslint": "^9.25.1",
+     "eslint-config-prettier": "^10.0.0",
+     "eslint-plugin-unused-imports": "^4.1.4",
+     "nx": "20.8.0",
++    "pino-pretty": "^13.0.0",
+     "prettier": "^2.8.8",
++    "tsconfig-paths": "^4.2.0",
+     "tslib": "^2.3.0",
+     "typescript": "~5.7.2",
+     "typescript-eslint": "^8.19.0",
+diff --git a/workspace/pnpm-lock.yaml b/workspace/pnpm-lock.yaml
+index 36e36a9..20a38e5 100644
+--- a/workspace/pnpm-lock.yaml
++++ b/workspace/pnpm-lock.yaml
+@@ -38,6 +38,9 @@ importers:
+       '@nestjs/swagger':
+         specifier: ^11.1.5
+         version: 11.1.5(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
++      '@nestjs/typeorm':
++        specifier: ^11.0.0
++        version: 11.0.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.22(pg@8.15.6)(reflect-metadata@0.1.14))
+       '@ntegral/nestjs-sentry':
+         specifier: ^4.0.1
+         version: 4.0.1(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)(@sentry/hub@7.120.3)(@sentry/node@7.120.3)(class-transformer@0.5.1)(class-validator@0.14.1)(graphql@16.11.0)(reflect-metadata@0.1.14)(rimraf@3.0.2)(rxjs@7.8.2)
+@@ -59,12 +62,18 @@ importers:
+       class-validator:
+         specifier: ^0.14.1
+         version: 0.14.1
++      dotenv:
++        specifier: ^16.5.0
++        version: 16.5.0
+       lodash:
+         specifier: ^4.17.21
+         version: 4.17.21
+       nestjs-pino:
+         specifier: ^4.4.0
+         version: 4.4.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(pino-http@10.4.0)(pino@9.6.0)(rxjs@7.8.2)
++      pg:
++        specifier: ^8.15.6
++        version: 8.15.6
+       reflect-metadata:
+         specifier: ^0.1.13
+         version: 0.1.14
+@@ -76,7 +85,10 @@ importers:
+         version: 2.2.1
+       typeorm:
+         specifier: ^0.3.22
+-        version: 0.3.22(reflect-metadata@0.1.14)
++        version: 0.3.22(pg@8.15.6)(reflect-metadata@0.1.14)
++      typeorm-naming-strategies:
++        specifier: ^4.1.0
++        version: 4.1.0(typeorm@0.3.22(pg@8.15.6)(reflect-metadata@0.1.14))
+       uuid:
+         specifier: ^11.1.0
+         version: 11.1.0
+@@ -133,7 +145,7 @@ importers:
+         specifier: ^4.17.16
+         version: 4.17.16
+       '@types/node':
+-        specifier: ~18.16.9
++        specifier: ~18.16.20
+         version: 18.16.20
+       '@typescript-eslint/eslint-plugin':
+         specifier: ^8.31.0
+@@ -153,9 +165,15 @@ importers:
+       nx:
+         specifier: 20.8.0
+         version: 20.8.0(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.21)(typescript@5.7.3))(@swc/core@1.5.29(@swc/helpers@0.5.17))
++      pino-pretty:
++        specifier: ^13.0.0
++        version: 13.0.0
+       prettier:
+         specifier: ^2.8.8
+         version: 2.8.8
++      tsconfig-paths:
++        specifier: ^4.2.0
++        version: 4.2.0
+       tslib:
+         specifier: ^2.3.0
+         version: 2.8.1
+@@ -1224,6 +1242,15 @@ packages:
+       '@nestjs/platform-express':
+         optional: true
+ 
++  '@nestjs/typeorm@11.0.0':
++    resolution: {integrity: sha512-SOeUQl70Lb2OfhGkvnh4KXWlsd+zA08RuuQgT7kKbzivngxzSo1Oc7Usu5VxCxACQC9wc2l9esOHILSJeK7rJA==}
++    peerDependencies:
++      '@nestjs/common': ^10.0.0 || ^11.0.0
++      '@nestjs/core': ^10.0.0 || ^11.0.0
++      reflect-metadata: ^0.1.13 || ^0.2.0
++      rxjs: ^7.2.0
++      typeorm: ^0.3.0
++
+   '@nodelib/fs.scandir@2.1.5':
+     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
+     engines: {node: '>= 8'}
+@@ -2458,6 +2485,9 @@ packages:
+     resolution: {integrity: sha512-0LrrStPOdJj+SPCCrGhzryycLjwcgUSHBtxNA8aIDxf0GLsRh1cKYhB00Gd1lDOS4yGH69+SNn13+TWbVHETFQ==}
+     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
+ 
++  dateformat@4.6.3:
++    resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
++
+   dayjs@1.11.13:
+     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+ 
+@@ -2799,6 +2829,9 @@ packages:
+     resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
+     engines: {node: '>= 18'}
+ 
++  fast-copy@3.0.2:
++    resolution: {integrity: sha512-dl0O9Vhju8IrcLndv2eU4ldt1ftXMqqfgN4H1cpmGV7P6jeB9FwpN9a2c8DPGE1Ys88rNUJVYDHq73CGAGOPfQ==}
++
+   fast-deep-equal@3.1.3:
+     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
+ 
+@@ -3083,6 +3116,9 @@ packages:
+     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
+     hasBin: true
+ 
++  help-me@5.0.0:
++    resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
++
+   hosted-git-info@7.0.2:
+     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
+     engines: {node: ^16.14.0 || >=18.0.0}
+@@ -3438,6 +3474,10 @@ packages:
+     resolution: {integrity: sha512-eIz2msL/EzL9UFTFFx7jBTkeZfku0yUAyZZZmJ93H2TYEiroIx2PQjEXcwYtYl8zXCxb+PAmA2hLIt/6ZEkPHw==}
+     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+ 
++  joycon@3.1.1:
++    resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
++    engines: {node: '>=10'}
++
+   js-tokens@4.0.0:
+     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+ 
+@@ -3980,6 +4020,40 @@ packages:
+     resolution: {integrity: sha512-nri2TO5JE3/mRryik9LlHFT53cgHfRK0Lt0BAZQXku/AW3E6XLt2GaY8siWi7dvW/m1z0ecn+J+bpDa9ZN3IsQ==}
+     engines: {node: '>=18'}
+ 
++  pg-cloudflare@1.2.5:
++    resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
++
++  pg-connection-string@2.8.5:
++    resolution: {integrity: sha512-Ni8FuZ8yAF+sWZzojvtLE2b03cqjO5jNULcHFfM9ZZ0/JXrgom5pBREbtnAw7oxsxJqHw9Nz/XWORUEL3/IFow==}
++
++  pg-int8@1.0.1:
++    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
++    engines: {node: '>=4.0.0'}
++
++  pg-pool@3.9.6:
++    resolution: {integrity: sha512-rFen0G7adh1YmgvrmE5IPIqbb+IgEzENUm+tzm6MLLDSlPRoZVhzU1WdML9PV2W5GOdRA9qBKURlbt1OsXOsPw==}
++    peerDependencies:
++      pg: '>=8.0'
++
++  pg-protocol@1.9.5:
++    resolution: {integrity: sha512-DYTWtWpfd5FOro3UnAfwvhD8jh59r2ig8bPtc9H8Ds7MscE/9NYruUQWFAOuraRl29jwcT2kyMFQ3MxeaVjUhg==}
++
++  pg-types@2.2.0:
++    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
++    engines: {node: '>=4'}
++
++  pg@8.15.6:
++    resolution: {integrity: sha512-yvao7YI3GdmmrslNVsZgx9PfntfWrnXwtR+K/DjI0I/sTKif4Z623um+sjVZ1hk5670B+ODjvHDAckKdjmPTsg==}
++    engines: {node: '>= 8.0.0'}
++    peerDependencies:
++      pg-native: '>=3.0.1'
++    peerDependenciesMeta:
++      pg-native:
++        optional: true
++
++  pgpass@1.0.5:
++    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
++
+   picocolors@1.1.1:
+     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+ 
+@@ -4009,6 +4083,10 @@ packages:
+   pino-http@10.4.0:
+     resolution: {integrity: sha512-vjQsKBE+VN1LVchjbfLE7B6nBeGASZNRNKsR68VS0DolTm5R3zo+47JX1wjm0O96dcbvA7vnqt8YqOWlG5nN0w==}
+ 
++  pino-pretty@13.0.0:
++    resolution: {integrity: sha512-cQBBIVG3YajgoUjo1FdKVRX6t9XPxwB9lcNJVD5GCnNM4Y6T12YYx8c6zEejxQsU0wrg9TwmDulcE9LR7qcJqA==}
++    hasBin: true
++
+   pino-std-serializers@7.0.0:
+     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
+ 
+@@ -4250,6 +4328,22 @@ packages:
+     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
+     engines: {node: ^10 || ^12 || >=14}
+ 
++  postgres-array@2.0.0:
++    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
++    engines: {node: '>=4'}
++
++  postgres-bytea@1.0.0:
++    resolution: {integrity: sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==}
++    engines: {node: '>=0.10.0'}
++
++  postgres-date@1.0.7:
++    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
++    engines: {node: '>=0.10.0'}
++
++  postgres-interval@1.2.0:
++    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
++    engines: {node: '>=0.10.0'}
++
+   prelude-ls@1.2.1:
+     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
+     engines: {node: '>= 0.8.0'}
+@@ -4283,6 +4377,9 @@ packages:
+   prr@1.0.1:
+     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
+ 
++  pump@3.0.2:
++    resolution: {integrity: sha512-tUPXtzlGM8FE3P0ZL6DVs/3P58k9nk8/jZeQCurTJylQA8qFYzHFfhBJkuqyE0FifOsQ0uKWekiZ5g8wtr28cw==}
++
+   punycode@2.3.1:
+     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
+     engines: {node: '>=6'}
+@@ -4623,6 +4720,9 @@ packages:
+   secure-compare@3.0.1:
+     resolution: {integrity: sha512-AckIIV90rPDcBcglUwXPF3kg0P0qmPsPXAj6BBEENQE1p5yA1xfmDJzfi1Tappj37Pv2mVbKpL3Z1T+Nn7k1Qw==}
+ 
++  secure-json-parse@2.7.0:
++    resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
++
+   select-hose@2.0.0:
+     resolution: {integrity: sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==}
+ 
+@@ -5024,6 +5124,11 @@ packages:
+   typedarray@0.0.6:
+     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+ 
++  typeorm-naming-strategies@4.1.0:
++    resolution: {integrity: sha512-vPekJXzZOTZrdDvTl1YoM+w+sUIfQHG4kZTpbFYoTsufyv9NIBRe4Q+PdzhEAFA2std3D9LZHEb1EjE9zhRpiQ==}
++    peerDependencies:
++      typeorm: ^0.2.0 || ^0.3.0
++
+   typeorm@0.3.22:
+     resolution: {integrity: sha512-P/Tsz3UpJ9+K0oryC0twK5PO27zejLYYwMsE8SISfZc1lVHX+ajigiOyWsKbuXpEFMjD9z7UjLzY3+ElVOMMDA==}
+     engines: {node: '>=16.13.0'}
+@@ -6668,6 +6773,14 @@ snapshots:
+       '@nestjs/microservices': 11.1.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)(reflect-metadata@0.1.14)(rxjs@7.8.2)
+       '@nestjs/platform-express': 11.1.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)
+ 
++  '@nestjs/typeorm@11.0.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.1.0)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.22(pg@8.15.6)(reflect-metadata@0.1.14))':
++    dependencies:
++      '@nestjs/common': 11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2)
++      '@nestjs/core': 11.1.0(@nestjs/common@11.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/microservices@11.1.0)(@nestjs/platform-express@11.1.0)(reflect-metadata@0.1.14)(rxjs@7.8.2)
++      reflect-metadata: 0.1.14
++      rxjs: 7.8.2
++      typeorm: 0.3.22(pg@8.15.6)(reflect-metadata@0.1.14)
++
+   '@nodelib/fs.scandir@2.1.5':
+     dependencies:
+       '@nodelib/fs.stat': 2.0.5
+@@ -8242,6 +8355,8 @@ snapshots:
+     dependencies:
+       css-tree: 2.2.1
+ 
++  dateformat@4.6.3: {}
++
+   dayjs@1.11.13: {}
+ 
+   debug@2.6.9:
+@@ -8327,11 +8442,11 @@ snapshots:
+ 
+   dotenv-expand@11.0.7:
+     dependencies:
+-      dotenv: 16.4.7
++      dotenv: 16.5.0
+ 
+   dotenv-expand@12.0.1:
+     dependencies:
+-      dotenv: 16.4.7
++      dotenv: 16.5.0
+ 
+   dotenv@16.4.7: {}
+ 
+@@ -8600,6 +8715,8 @@ snapshots:
+     transitivePeerDependencies:
+       - supports-color
+ 
++  fast-copy@3.0.2: {}
++
+   fast-deep-equal@3.1.3: {}
+ 
+   fast-glob@3.3.2:
+@@ -8893,6 +9010,8 @@ snapshots:
+ 
+   he@1.2.0: {}
+ 
++  help-me@5.0.0: {}
++
+   hosted-git-info@7.0.2:
+     dependencies:
+       lru-cache: 10.4.3
+@@ -9413,6 +9532,8 @@ snapshots:
+       merge-stream: 2.0.0
+       supports-color: 8.1.1
+ 
++  joycon@3.1.1: {}
++
+   js-tokens@4.0.0: {}
+ 
+   js-yaml@3.14.1:
+@@ -9940,6 +10061,41 @@ snapshots:
+ 
+   peek-readable@7.0.0: {}
+ 
++  pg-cloudflare@1.2.5:
++    optional: true
++
++  pg-connection-string@2.8.5: {}
++
++  pg-int8@1.0.1: {}
++
++  pg-pool@3.9.6(pg@8.15.6):
++    dependencies:
++      pg: 8.15.6
++
++  pg-protocol@1.9.5: {}
++
++  pg-types@2.2.0:
++    dependencies:
++      pg-int8: 1.0.1
++      postgres-array: 2.0.0
++      postgres-bytea: 1.0.0
++      postgres-date: 1.0.7
++      postgres-interval: 1.2.0
++
++  pg@8.15.6:
++    dependencies:
++      pg-connection-string: 2.8.5
++      pg-pool: 3.9.6(pg@8.15.6)
++      pg-protocol: 1.9.5
++      pg-types: 2.2.0
++      pgpass: 1.0.5
++    optionalDependencies:
++      pg-cloudflare: 1.2.5
++
++  pgpass@1.0.5:
++    dependencies:
++      split2: 4.2.0
++
+   picocolors@1.1.1: {}
+ 
+   picomatch@2.3.1: {}
+@@ -9964,6 +10120,22 @@ snapshots:
+       pino-std-serializers: 7.0.0
+       process-warning: 4.0.1
+ 
++  pino-pretty@13.0.0:
++    dependencies:
++      colorette: 2.0.20
++      dateformat: 4.6.3
++      fast-copy: 3.0.2
++      fast-safe-stringify: 2.1.1
++      help-me: 5.0.0
++      joycon: 3.1.1
++      minimist: 1.2.8
++      on-exit-leak-free: 2.1.2
++      pino-abstract-transport: 2.0.0
++      pump: 3.0.2
++      secure-json-parse: 2.7.0
++      sonic-boom: 4.2.0
++      strip-json-comments: 3.1.1
++
+   pino-std-serializers@7.0.0: {}
+ 
+   pino@9.6.0:
+@@ -10200,6 +10372,16 @@ snapshots:
+       picocolors: 1.1.1
+       source-map-js: 1.2.1
+ 
++  postgres-array@2.0.0: {}
++
++  postgres-bytea@1.0.0: {}
++
++  postgres-date@1.0.7: {}
++
++  postgres-interval@1.2.0:
++    dependencies:
++      xtend: 4.0.2
++
+   prelude-ls@1.2.1: {}
+ 
+   prettier@2.8.8: {}
+@@ -10226,6 +10408,11 @@ snapshots:
+   prr@1.0.1:
+     optional: true
+ 
++  pump@3.0.2:
++    dependencies:
++      end-of-stream: 1.4.4
++      once: 1.4.0
++
+   punycode@2.3.1: {}
+ 
+   pure-rand@6.1.0: {}
+@@ -10519,6 +10706,8 @@ snapshots:
+ 
+   secure-compare@3.0.1: {}
+ 
++  secure-json-parse@2.7.0: {}
++
+   select-hose@2.0.0: {}
+ 
+   selfsigned@2.4.1:
+@@ -10973,7 +11162,11 @@ snapshots:
+ 
+   typedarray@0.0.6: {}
+ 
+-  typeorm@0.3.22(reflect-metadata@0.1.14):
++  typeorm-naming-strategies@4.1.0(typeorm@0.3.22(pg@8.15.6)(reflect-metadata@0.1.14)):
++    dependencies:
++      typeorm: 0.3.22(pg@8.15.6)(reflect-metadata@0.1.14)
++
++  typeorm@0.3.22(pg@8.15.6)(reflect-metadata@0.1.14):
+     dependencies:
+       '@sqltools/formatter': 1.2.5
+       ansis: 3.17.0
+@@ -10989,6 +11182,8 @@ snapshots:
+       tslib: 2.8.1
+       uuid: 11.1.0
+       yargs: 17.7.2
++    optionalDependencies:
++      pg: 8.15.6
+     transitivePeerDependencies:
+       - supports-color
+ 

@@ -7,6 +7,7 @@ import { generateDataSourceOptions } from './type-orm.config';
 import Entities from './entities';
 import { USER_REPO } from '../application';
 import { UserRepo } from './repositories';
+import { EntityMapperProfile } from './mappers';
 
 @Module({})
 export class UserDatabaseModule {
@@ -35,8 +36,10 @@ export class UserDatabaseModule {
           provide: USER_REPO,
           useClass: UserRepo,
         },
+        EntityMapperProfile,
       ],
-      exports: [USER_REPO],
+
+      exports: [USER_REPO, EntityMapperProfile],
     };
   }
 }
