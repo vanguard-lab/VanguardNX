@@ -1,20 +1,16 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IDbOptions } from './options';
-import { generateDataSourceOptions } from './type-orm.config';
-
-import Entities from './entities';
 import { USER_REPO } from '../application';
-import { UserRepo } from './repositories';
-import { EntityMapperProfile } from './mappers';
+import { EntityMapperProfile, generateDataSourceOptions, IDbOptions, UserRepo } from './persistence';
+import Entities from './persistence/entities';
 
 @Module({})
-export class UserDatabaseModule {
+export class InfrastructureModule {
   public static forRoot(): DynamicModule {
     return {
       global: true,
-      module: UserDatabaseModule,
+      module: InfrastructureModule,
       imports: [
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],

@@ -7,7 +7,7 @@ import { VanguardNxSharedCoreLibModule } from '@vanguard-nx/core';
 import { LoggerModule, Params } from 'nestjs-pino';
 import { ApplicationModule } from './application';
 import { configFactory, IUsersMsConfig } from './configuration';
-import { UserDatabaseModule } from './db';
+import { InfrastructureModule } from './infrastructure';
 
 @Module({})
 export class UsersModule {
@@ -35,7 +35,7 @@ export class UsersModule {
         }),
         VanguardNxSharedCoreLibModule.forRoot(),
         ApplicationModule.forRoot(),
-        UserDatabaseModule.forRoot(),
+        InfrastructureModule.forRoot(),
       ],
       providers: [],
       exports: [VanguardNxSharedCoreLibModule],

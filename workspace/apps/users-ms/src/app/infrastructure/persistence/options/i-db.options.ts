@@ -1,4 +1,3 @@
-// @ts-ignore: Strict checks
 export interface IDbOptions {
   host: string;
   port: number;

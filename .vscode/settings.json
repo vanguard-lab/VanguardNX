@@ -2,9 +2,12 @@
   "cSpell.words": [
     "automapper",
     "cockroachdb",
+    "crdb",
     "healthcheck",
+    "initdb",
     "MILLIS",
     "ntegral",
+    "pgadmin",
     "roachnet"
   ],
   "nxConsole.nxWorkspacePath": "workspace",
@@ -37,8 +40,9 @@
   },
 
   "eslint.useESLintClass": true,
-  "eslint.workingDirectories": ["./"],
-  "eslint.options": {
-    "extensions": [".js", ".ts"]
-  }
+
+  "eslint.workingDirectories": [
+    { "mode": "auto" },
+    { "directory": "./workspace" }
+  ]
 }
