@@ -12,18 +12,13 @@
  * @version 1.0.0
  */
 
-import {
-  createMap,
-  forMember,
-  mapFrom,
-  Mapper,
-  MappingProfile,
-} from '@automapper/core';
+import { createMap, Mapper, MappingProfile } from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
-import { GetUserRequest, GetUserResponse } from '../models';
+import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from '../models';
 import { GetUserQuery } from '../queries';
+import { AddUserCommand } from '../commands';
 
 /**
  * ┌─────────────────────────────────────────────────────────────────────────┐
@@ -58,6 +53,7 @@ export class UsersMapperProfile extends AutomapperProfile {
   public override get profile(): MappingProfile {
     return (mapper) => {
       this.get(mapper);
+      this.add(mapper);
       this.response(mapper);
     };
   }
@@ -76,6 +72,11 @@ export class UsersMapperProfile extends AutomapperProfile {
     createMap(mapper, GetUserRequest, GetUserQuery);
   }
 
+  private add(mapper: Mapper): void {
+    createMap(mapper, AddUserRequest, AddUserCommand);
+    createMap(mapper, AddUserCommand, User);
+  }
+
   /**
    * ┌────────────────────────────────────────────┐
    * │             RESPONSE MAPPING               │
@@ -87,14 +88,7 @@ export class UsersMapperProfile extends AutomapperProfile {
    * @param mapper - The AutoMapper instance
    */
   private response(mapper: Mapper): void {
-    createMap(
-      mapper,
-      User,
-      GetUserResponse,
-      forMember(
-        (d) => d.userId,
-        mapFrom((s) => s.id)
-      )
-    );
+    createMap(mapper, User, GetUserResponse);
+    createMap(mapper, User, UserTinyResponse);
   }
 }

@@ -41,6 +41,10 @@ export abstract class BaseReadOnlyRepo<TEntity extends ObjectLiteral, T, TKey> i
     return this.mapper.map(entity, this.entityType, this.domainType);
   }
 
+  protected mapToModelArray(entities: TEntity[]): T[] {
+    return this.mapper.mapArray(entities, this.entityType, this.domainType);
+  }
+
   protected isDeleted(entity: TEntity | null): boolean {
     return isNil(entity);
   }

@@ -8,5 +8,5 @@ export class User {
   public username: string;
 
   @AutoMap()
-  public test: string;
+  public email: string;
 }

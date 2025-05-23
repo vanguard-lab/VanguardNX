@@ -18,7 +18,7 @@
  * This implementation provides strict typing and decorator-based registration for command and query handlers.
  *
  * @package    @vanguard-nx/cqrs
- * @author     Vanguard Team <dev@vanguardlab.org>
+ * @author     Vanguard Team
  * @copyright  2025 Vanguard Inc.
  * @license    MIT
  */

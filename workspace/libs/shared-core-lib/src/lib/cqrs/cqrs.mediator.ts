@@ -26,10 +26,7 @@ import { QueryBase } from './query-base';
  */
 @Injectable()
 export class CqrsMediator {
-  constructor(
-    protected readonly queryBus: QueryBus,
-    protected readonly commandBus: CommandBus
-  ) {}
+  constructor(protected readonly queryBus: QueryBus, protected readonly commandBus: CommandBus) {}
 
   public async execute<T extends CQBase, TRes = any>(cq: T): Promise<TRes> {
     if (cq instanceof QueryBase) {

@@ -1,14 +1,13 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Mapper } from '@automapper/core';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { InjectMapper } from '@automapper/nestjs';
 import { CqrsMediator } from '@vanguard-nx/core';
-
-import { GetUserQuery } from './queries';
+import { AddUserCommand } from './commands';
 import { User } from './domain';
-import { GetUserRequest, GetUserResponse } from './models';
+import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from './models';
+import { GetUserQuery, ListUsersQuery } from './queries';
 
 /**
  * Base path and API version for the Users controller.
@@ -37,8 +36,7 @@ export class UsersController {
   constructor(
     protected readonly mediator: CqrsMediator,
     @InjectMapper() protected readonly mapper: Mapper,
-    @InjectPinoLogger(UsersController.name)
-    protected readonly logger: PinoLogger
+    @InjectPinoLogger(UsersController.name) protected readonly logger: PinoLogger,
   ) {}
 
   /**
@@ -58,10 +56,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Get User' })
   @ApiOkResponse({ type: GetUserResponse })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  public async getAddress(
-    @Param() model: GetUserRequest
-  ): Promise<GetUserResponse> {
+  @Get('get/:id')
+  public async getUser(@Param() model: GetUserRequest): Promise<GetUserResponse> {
     // AutoMapper validates GetUserRequest → GetUserQuery mapping at startup
     const query = this.mapper.map(model, GetUserRequest, GetUserQuery);
 
@@ -70,5 +66,53 @@ export class UsersController {
 
     // Domain → Response mapping validated by automapper config
     return this.mapper.map(result, User, GetUserResponse);
+  }
+
+  /**
+   * List all users
+   * 1. CQRS query (ListUsersQuery) called without filter support
+   * 2. Mediator dispatches query to handler
+   * 3. Domain → DTO mapping validated via AutoMapper
+   *
+   * @ApiOperation { summary: 'List Users' } - OpenAPI metadata
+   * @ApiOkResponse { type: [UserTinyResponse] } - Response metadata
+   * @HttpCode 200 - Strict status code enforcement
+   * @Get 'list' - Versioned endpoint
+   * @returns {Promise<UserTinyResponse[]>} - Array of slim user DTOs
+   */
+  @ApiOperation({ summary: 'List Users' })
+  @ApiOkResponse({ type: [UserTinyResponse] })
+  @HttpCode(HttpStatus.OK)
+  @Get('list')
+  public async listUsers(): Promise<UserTinyResponse[]> {
+    const query = new ListUsersQuery(); // as of now there is no filtering feature available so calling down the query directly instead of mapping with request class
+    const result = await this.mediator.execute<ListUsersQuery, User[]>(query);
+
+    return this.mapper.mapArray(result, User, UserTinyResponse);
+  }
+
+  /**
+   * Create a new user
+   * 1. Request DTO (AddUserRequest) → Command mapping via AutoMapper
+   * 2. Mediator enforces CQRS - sends command to handler
+   * 3. Result mapped to minimal response DTO
+   *
+   * @ApiOperation { summary: 'Create new User' } - OpenAPI metadata
+   * @ApiOkResponse { type: UserTinyResponse } - Response metadata
+   * @HttpCode 201 - Created response
+   * @Post '/' - Versioned endpoint
+   * @param {AddUserRequest} model - Body-validated request DTO
+   * @returns {Promise<UserTinyResponse>} - Minimal response payload
+   * @throws {MappingError} 500 - If DTO mapping fails
+   */
+  @ApiOperation({ summary: 'Create new User' })
+  @ApiOkResponse({ type: UserTinyResponse })
+  @HttpCode(HttpStatus.CREATED)
+  @Post()
+  public async createUser(@Body() model: AddUserRequest): Promise<UserTinyResponse> {
+    const command = this.mapper.map(model, AddUserRequest, AddUserCommand);
+    const result = await this.mediator.execute<AddUserCommand, User>(command);
+
+    return this.mapper.map(result, User, UserTinyResponse);
   }
 }

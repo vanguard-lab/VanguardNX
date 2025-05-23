@@ -1,12 +1,9 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserTinyResponse } from './user-tiny.response';
 
-export class GetUserResponse {
-  @ApiProperty({ description: 'User Id', required: true })
+export class GetUserResponse extends UserTinyResponse {
+  @ApiProperty({ description: 'User Email', required: true })
   @AutoMap()
-  public userId: string;
-
-  @ApiProperty({ description: 'Username', required: true })
-  @AutoMap()
-  public username: string;
+  public email: string;
 }

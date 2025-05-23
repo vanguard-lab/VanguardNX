@@ -17,10 +17,10 @@ This document outlines the controller implementation pattern used in the Vanguar
 <!-- this is not really how it should be - change this in near future! -->
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌──────────────┐     ┌────────────┐
-│  RequestDTO │────▶│Query/Command│────▶│ Domain Entity│────▶│ ResponseDTO│
-└─────────────┘     └─────────────┘     └──────────────┘     └────────────┘
-     HTTP             CQRS Layer           Domain Layer         HTTP
+┌────────────┐     ┌───────────────┐     ┌───────────────┐     ┌─────────────┐
+│ RequestDTO │────▶│ Query/Command │────▶│ Domain Entity │────▶│ ResponseDTO │
+└────────────┘     └───────────────┘     └───────────────┘     └─────────────┘
+    HTTP             CQRS Layer            Domain Layer             HTTP
 ```
 
 ## Controller Implementation Pattern

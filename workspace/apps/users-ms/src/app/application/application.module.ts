@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { Controllers, MappingProfiles, QueryHandlers } from './features';
+import { CommandHandlers, Controllers, MappingProfiles, QueryHandlers } from './features';
 
 @Module({})
 export class ApplicationModule {
@@ -10,7 +10,7 @@ export class ApplicationModule {
       module: ApplicationModule,
       imports: [CqrsModule],
       controllers: [...Controllers],
-      providers: [...QueryHandlers, ...MappingProfiles],
+      providers: [...QueryHandlers, ...CommandHandlers, ...MappingProfiles],
     };
   }
 }
