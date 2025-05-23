@@ -1,28 +1,24 @@
-import { NestFactory } from '@nestjs/core';
-import { Logger } from 'nestjs-pino';
-import { UsersModule } from './app/user.module';
 import type { INestApplication } from '@nestjs/common';
 import { RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RpcGlobalExceptionInterceptor } from '@vanguard-nx/core';
 import { EMPTY_STR } from '@vanguard-nx/utils';
 import * as bodyParser from 'body-parser';
+import { Logger } from 'nestjs-pino';
+import { IApiOptions, IUsersMsConfig } from './app/configuration';
+import { UsersModule } from './app/user.module';
 
 const PKG_VERSION = process.env?.npm_package_version ?? '1.0';
 const PKG_NAME = process.env?.npm_package_name ?? 'api-bootstrap';
 const GLOBAL_VERSION = '1';
-const PORT = 3000;
-// TODO: move this to env
-const apiConfig = {
-  domain: `http://localhost:${PORT}`,
-  host: '0.0.0.0',
-  port: PORT,
-  globalPrefix: 'users',
-};
 
 async function bootstrap(): Promise<void> {
   const context = await NestFactory.createApplicationContext(UsersModule.forRoot(), { bufferLogs: true });
   const logger = context.get<Logger>(Logger);
+  const config = context.get<ConfigService<IUsersMsConfig>>(ConfigService);
+  const apiConfig = config.get<IApiOptions>('api')!;
 
   await context.close();
 
@@ -47,7 +43,7 @@ async function bootstrap(): Promise<void> {
   await app.startAllMicroservices();
   logger.log(`Microservice started`);
 
-  await app.listen(PORT);
+  await app.listen(apiConfig.port);
   logger.log(`Application is running on: http://${apiConfig.host}:${apiConfig.port}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`);
   logger.log(`Global URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/v${GLOBAL_VERSION}`);
   logger.log(`Documentation URL: ${apiConfig.domain}/${apiConfig.globalPrefix}/docs`);
