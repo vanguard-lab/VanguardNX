@@ -1,22 +1,20 @@
-// TODO: WIP - dynamic load envs from .env for local on typeorm migrations
 import { config } from 'dotenv';
-import * as fs from 'fs';
+import { existsSync } from 'fs';
 import { resolve } from 'path';
 
-const configFlagIndex = process.argv.findIndex((arg) => arg === '-d');
-if (configFlagIndex !== -1 && configFlagIndex + 1 < process.argv.length) {
-  const configPath = resolve(process.cwd(), process.argv[configFlagIndex + 1]);
+const flag = '-d';
+const flagIndex = process.argv.indexOf(flag);
 
-  const serviceRoot = resolve(configPath, '../../../..');
-  console.log({ configPath, serviceRoot });
-  const envPath = resolve(serviceRoot, '.env');
+if (flagIndex >= 0 && flagIndex + 1 < process.argv.length) {
+  const targetDir = resolve(process.cwd(), process.argv[flagIndex + 1]);
+  const envFile = resolve(targetDir, '../../../../..', '.env');
 
-  if (fs.existsSync(envPath)) {
-    config({ path: envPath });
-    console.log(`Loaded .env from: ${envPath}`);
+  if (existsSync(envFile)) {
+    config({ path: envFile });
+    console.log(`Loaded .env from: ${envFile}`);
   } else {
-    console.warn(`.env not found at: ${envPath}`);
+    console.warn(`.env file not found at: ${envFile}`);
   }
 } else {
-  console.warn('No -d flag provided. Skipping env loading.');
+  console.warn(`Missing "${flag}" flag. Skipping environment loading.`);
 }

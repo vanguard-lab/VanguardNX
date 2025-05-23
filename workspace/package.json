@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "typeorm": "ts-node -r tsconfig-paths/register -P  ./libs/shared-core-lib/tsconfig.lib.json ./node_modules/typeorm/cli.js",
+    "typeorm": "ts-node -r tsconfig-paths/register -r ./load-env -P  ./libs/shared-core-lib/tsconfig.lib.json ./node_modules/typeorm/cli.js",
     "users:start": "nx run-many --parallel --target=serve --projects=users-ms",
-    "users:migration:show": "npm run typeorm migration:show -- -d ./apps/users-ms/src/app/db/type-orm.config.ts",
-    "users:migration:up": "npm run typeorm migration:run -- -d ./apps/users-ms/src/app/db/type-orm.config.ts --transaction=none",
-    "users:migration:generate": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts migration:generate ./apps/users-ms/src/app/db/migrations/migration",
-    "users:migration:create": "npm run typeorm -- migration:create ./apps/users-ms/src/app/db/migrations/migration",
-    "users:migration:down": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts migration:revert",
-    "users:schema:drop": "npm run typeorm -- -d ./apps/users-ms/src/app/db/type-orm.config.ts schema:drop"
+    "users:migration:show": "npm run typeorm migration:show -- -d ./apps/users-ms/src/app/infrastructure/persistence/type-orm.config.ts",
+    "users:migration:up": "npm run typeorm migration:run -- -d ./apps/users-ms/src/app/infrastructure/persistence/type-orm.config.ts --transaction=none",
+    "users:migration:generate": "npm run typeorm -- -d ./apps/users-ms/src/app/infrastructure/persistence/type-orm.config.ts migration:generate ./apps/users-ms/src/app/db/migrations/migration",
+    "users:migration:create": "npm run typeorm -- migration:create ./apps/users-ms/src/app/infrastructure/persistence/migrations/migration",
+    "users:migration:down": "npm run typeorm -- -d ./apps/users-ms/src/app/infrastructure/persistence/type-orm.config.ts migration:revert",
+    "users:schema:drop": "npm run typeorm -- -d ./apps/users-ms/src/app/infrastructure/persistence/type-orm.config.ts schema:drop"
   },
   "private": true,
   "dependencies": {
@@ -70,6 +70,7 @@
     "nx": "20.8.0",
     "pino-pretty": "^13.0.0",
     "prettier": "^2.8.8",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
