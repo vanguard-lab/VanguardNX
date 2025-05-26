@@ -1,7 +1,7 @@
 {
   "name": "@workspace/source",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "typeorm": "ts-node -r tsconfig-paths/register -r ./load-env -P  ./libs/shared-core-lib/tsconfig.lib.json ./node_modules/typeorm/cli.js",
     "users:start": "nx run-many --parallel --target=serve --projects=users-ms",
