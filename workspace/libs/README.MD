@@ -254,11 +254,11 @@ Every function here solves a real, painful problem. If you’re not leveraging t
 **_Don’t be basic. Be Vanguard._**
 
 
-[Explore the source. Steal our patterns. Or fork off.](https://github.com/api-ace/VanguardNX/tree/main/workspace/libs)
+
 
 ## License
-<!-- //TODO: pick the license - or make something up -->
-[some-license] © Vanguard Inc. 2025
+
+[LICENSE](../../LICENSE) © VanguardNX. 2025. All rights reserved.
 
 ## Acknowledgements
 

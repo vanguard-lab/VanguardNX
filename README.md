@@ -286,6 +286,10 @@ export const configFactory = (): IUsersMsConfig => ({
 
 
 
+## License
+
+[LICENSE](./LICENSE) © VanguardNX. 2025. All rights reserved.
+
 <!-- # TODOS AND NOTES TO SELF BEFORE OPEN-SOURCING
 make shared lib
 ```bash
