@@ -9,18 +9,18 @@ import { isNilOrEmpty } from '@vanguard-nx/utils';
 import { UserNotFoundException } from '../../exceptions';
 
 @QueryHandlerStrict(GetUserQuery)
-export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, User | null> {
+export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, User> {
   constructor(@Inject(USER_REPO) protected readonly repo: IUserRepo, @InjectPinoLogger(GetUserQueryHandler.name) private logger: PinoLogger) {}
 
-  public async execute(query: GetUserQuery): Promise<User | null> {
+  public async execute(query: GetUserQuery): Promise<User> {
     this.logger.info(`Executing Query "${GetUserQuery.name}"`);
 
-    const user = await this.repo.getAsync('1');
+    const user = await this.repo.getAsync(query.id);
 
     if (isNilOrEmpty(user)) {
       throw new UserNotFoundException(`User with Id: ${query.id} not found.`);
     }
 
-    return user;
+    return user!;
   }
 }
