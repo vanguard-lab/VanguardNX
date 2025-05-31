@@ -36,6 +36,7 @@
     "lodash": "^4.17.21",
     "nestjs-pino": "^4.4.0",
     "pg": "^8.15.6",
+    "pino-http": "^10.4.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "string-ts": "^2.2.1",
