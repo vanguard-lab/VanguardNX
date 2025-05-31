@@ -1,6 +1,6 @@
 # VanguardNX — Deterministic Microservice Architecture Boilerplate
 
-> Precision. Structure. Discipline.
+
 
 **VanguardNX** is a production-grade, CQRS-driven microservice architecture for Node.js and TypeScript. It enforces strict boundaries, explicit flows, and runtime determinism, designed for teams prioritizing scalability, maintainability, and correctness over shortcuts. This is not a generic NestJS starter—it’s a disciplined framework for real-world, distributed systems.
 
