@@ -7,6 +7,8 @@
     "initdb",
     "MILLIS",
     "ntegral",
+    "paramtype",
+    "Paramtypes",
     "pgadmin",
     "roachnet"
   ],

@@ -7,6 +7,7 @@ const HOME_REQ_DATA = { path: EMPTY_STR, method: RequestMethod.GET };
 
 const getTransport = (): any => {
   if (!isLocal()) {
+    // Use pino-pretty in Local environment only
     return undefined;
   }
 
@@ -22,9 +23,11 @@ const getTransport = (): any => {
 
 export const generateLoggerConfig = (): Params => {
   const result: Params = {
+    forRoutes: ['*'], // solves the issue https://github.com/iamolegga/nestjs-pino/issues/1849#issuecomment-2296337934
     pinoHttp: {
       level: 'debug',
       transport: getTransport(),
+      autoLogging: true,
     },
   };
 
