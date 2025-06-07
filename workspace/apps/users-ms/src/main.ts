@@ -15,14 +15,12 @@ const PKG_NAME = process.env?.npm_package_name ?? 'api-bootstrap';
 const GLOBAL_VERSION = '1';
 
 async function bootstrap(): Promise<void> {
-  const context = await NestFactory.createApplicationContext(UsersModule.forRoot(), { bufferLogs: true });
-  const logger = context.get<Logger>(Logger);
-  const config = context.get<ConfigService<IUsersMsConfig>>(ConfigService);
+  const usersModule = UsersModule.forRoot();
+  const app = await NestFactory.create(usersModule);
+
+  const logger = app.get<Logger>(Logger);
+  const config = app.get<ConfigService<IUsersMsConfig>>(ConfigService);
   const apiConfig = config.get<IApiOptions>('api')!;
-
-  await context.close();
-
-  const app = await NestFactory.create(UsersModule.forRoot());
 
   app.setGlobalPrefix(apiConfig.globalPrefix, {
     exclude: [{ path: EMPTY_STR, method: RequestMethod.GET, version: EMPTY_STR }],
