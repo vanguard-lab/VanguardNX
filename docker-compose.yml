@@ -1,16 +1,19 @@
 services:
-  crdb:
-    image: cockroachdb/cockroach:latest
-    command: start-single-node --insecure
+  cockroachdb:
+    build:
+      context: .
+      dockerfile: docker/init/Dockerfile
     ports:
-      - "26257:26257"  # SQL port
-      - "8080:8080"    # Admin UI
+      - "26257:26257"
+      - "8080:8080"
     volumes:
-      - ./docker/tmp/cockroach/:/cockroach/cockroach-data
-      - ./docker/init/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - ./docker/tmp/cockroach-data:/cockroach/cockroach-data
+      - ./docker/init/db.sh:/init-db.sh
     environment:
-      - COCKROACH_DATABASES=user_db  # Comma-separated list of DB names
+      - COCKROACH_DBS=user_db,test_db
+    networks:
+      - cockroach-net
 
 networks:
-  default:
-    name: crdb-network
+  cockroach-net:
+    driver: bridge
