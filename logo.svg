@@ -1,0 +1,6 @@
+<svg width="250" height="60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,0 L20,40 L40,0 Z" fill="#E0234E"/> <!-- NestJS red -->
+  <path d="M20,0 L40,40 L60,0 Z" fill="#143055"/> <!-- NX blue -->
+  <text x="70" y="42" font-family="Ubuntu" font-size="26" fill="#E0234E">Vanguard<tspan fill="#143055">NX</tspan></text>
+  
+</svg>
