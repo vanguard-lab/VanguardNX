@@ -1,4 +1,4 @@
-# 🤔 VanguardNX Extended FAQ
+# 🤔 VanguardNX FAQ
 
 ## Table of Contents
 
