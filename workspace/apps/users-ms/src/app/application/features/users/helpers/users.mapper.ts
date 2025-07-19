@@ -13,12 +13,13 @@
  */
 
 import { createMap, Mapper, MappingProfile } from '@automapper/core';
-import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
+import { AutomapperProfile, InjectMapper as IMpr } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
 import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from '../models';
-import { GetUserQuery } from '../queries';
+import { GetUserQuery, ListUsersQuery } from '../queries';
 import { AddUserCommand } from '../commands';
+import { InjectMapper, MapperProfile, ObjectMapper } from '@vanguard-nx/core';
 
 /**
  * ┌─────────────────────────────────────────────────────────────────────────┐
@@ -40,7 +41,7 @@ export class UsersMapperProfile extends AutomapperProfile {
    *
    * @param mapper - The AutoMapper instance injected by NestJS
    */
-  constructor(@InjectMapper() mapper: Mapper) {
+  constructor(@IMpr() mapper: Mapper) {
     super(mapper);
   }
 
@@ -70,6 +71,7 @@ export class UsersMapperProfile extends AutomapperProfile {
    */
   private get(mapper: Mapper): void {
     createMap(mapper, GetUserRequest, GetUserQuery);
+    createMap(mapper, ListUsersQuery, User);
   }
 
   private add(mapper: Mapper): void {
@@ -90,5 +92,17 @@ export class UsersMapperProfile extends AutomapperProfile {
   private response(mapper: Mapper): void {
     createMap(mapper, User, GetUserResponse);
     createMap(mapper, User, UserTinyResponse);
+  }
+}
+
+@Injectable()
+export class CustomUserMapperProfile extends MapperProfile {
+  constructor(@InjectMapper() protected readonly mapper: ObjectMapper) {
+    console.log('##################################################### it got registered');
+    super(mapper);
+  }
+
+  protected configure(): void {
+    this.createMap(User, ListUsersQuery);
   }
 }
