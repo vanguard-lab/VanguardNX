@@ -1,4 +1,4 @@
-import { AutoMap } from '@automapper/classes';
+import { AutoMap } from '@vanguard-nx/core';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { EMAIL_MAX_LEN, END_USER_SCHEMA, PK_NAME, TABLE_NAME, USERNAME_MAX_LEN } from '../constants';
 

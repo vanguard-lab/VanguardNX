@@ -1,22 +1,21 @@
-import { createMap, Mapper, MappingProfile } from '@automapper/core';
-import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from '../entities';
+import { InjectMapper, ITransmute, MapperProfile } from '@vanguard-nx/core';
 import { User } from '../../../application';
+import { UserEntity } from '../entities';
 
 @Injectable()
-export class EntityMapperProfile extends AutomapperProfile {
-  constructor(@InjectMapper() mapper: Mapper) {
+export class EntityMapperProfile extends MapperProfile {
+  constructor(@InjectMapper() protected readonly mapper: ITransmute) {
     super(mapper);
   }
 
-  public override get profile(): MappingProfile {
-    return (mapper) => {
-      this.user(mapper);
-    };
+  public override configure(): void {
+    this.user();
   }
 
-  private user(mapper: Mapper): void {
-    createMap(mapper, UserEntity, User);
+  private user(): void {
+    this.createMap(UserEntity, User);
+
+    this.mapper.debug();
   }
 }

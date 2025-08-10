@@ -35,7 +35,7 @@ export class InfrastructureModule {
         EntityMapperProfile,
       ],
 
-      exports: [USER_REPO, EntityMapperProfile],
+      exports: [USER_REPO],
     };
   }
 }

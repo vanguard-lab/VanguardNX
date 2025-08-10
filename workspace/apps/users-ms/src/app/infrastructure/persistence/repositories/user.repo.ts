@@ -1,7 +1,5 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepo, DbException } from '@vanguard-nx/core';
+import { BaseRepo, DbException, InjectMapper, ITransmute } from '@vanguard-nx/core';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 
@@ -20,7 +18,7 @@ import { IUserRepo, User } from '../../../application';
  * @see IUsersRepository
  */
 export class UserRepo extends BaseRepo<UserEntity, User, string> implements IUserRepo {
-  constructor(@InjectRepository(UserEntity) protected repo: Repository<UserEntity>, @InjectMapper() mapper: Mapper, @InjectPinoLogger(UserRepo.name) logger: PinoLogger) {
+  constructor(@InjectRepository(UserEntity) protected repo: Repository<UserEntity>, @InjectMapper() mapper: ITransmute, @InjectPinoLogger(UserRepo.name) logger: PinoLogger) {
     super(repo, mapper, logger, UserEntity, User);
   }
 
