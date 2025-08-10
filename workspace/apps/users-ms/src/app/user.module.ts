@@ -1,14 +1,13 @@
-import { classes } from '@automapper/classes';
-import { AutomapperModule } from '@automapper/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SentryInterceptor, SentryModule, SentryModuleOptions } from '@ntegral/nestjs-sentry';
-import { VanguardNxSharedCoreLibModule } from '@vanguard-nx/core';
-import { LoggerModule, Params } from 'nestjs-pino';
-import { ApplicationModule } from './application';
+import { VanguardTransmuteModule, VanguardNxSharedCoreLibModule } from '@vanguard-nx/core';
+import { LoggerModule, Params, PinoLogger } from 'nestjs-pino';
+import { ApplicationModule, PinoLoggerAdapter } from './application';
 import { configFactory, IUsersMsConfig } from './configuration';
 import { InfrastructureModule } from './infrastructure';
+
 @Module({})
 export class UsersModule {
   public static forRoot(): DynamicModule {
@@ -30,8 +29,15 @@ export class UsersModule {
           useFactory: async (config: ConfigService<IUsersMsConfig>) => config.get<SentryModuleOptions>('sentry')!,
           inject: [ConfigService],
         }),
-        AutomapperModule.forRoot({
-          strategyInitializer: classes(),
+        VanguardTransmuteModule.forRootAsync({
+          imports: [LoggerModule],
+          inject: [PinoLogger],
+          useFactory: (pinoLogger: PinoLogger) => ({
+            logging: {
+              enabled: false,
+              logger: new PinoLoggerAdapter(pinoLogger),
+            },
+          }),
         }),
         VanguardNxSharedCoreLibModule.forRoot(),
         ApplicationModule.forRoot(),

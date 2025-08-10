@@ -1,7 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CommandHandlers, Controllers, CustomMappings, MappingProfiles, QueryHandlers } from './features';
-import { ObjectMapperModule } from '@vanguard-nx/core';
+import { CommandHandlers, Controllers, MappingProfiles, QueryHandlers } from './features';
 
 @Module({})
 export class ApplicationModule {
@@ -9,9 +8,9 @@ export class ApplicationModule {
     return {
       global: true,
       module: ApplicationModule,
-      imports: [CqrsModule, ObjectMapperModule],
+      imports: [CqrsModule],
       controllers: [...Controllers],
-      providers: [...QueryHandlers, ...CommandHandlers, ...MappingProfiles, ...CustomMappings],
+      providers: [...QueryHandlers, ...CommandHandlers, ...MappingProfiles],
     };
   }
 }
