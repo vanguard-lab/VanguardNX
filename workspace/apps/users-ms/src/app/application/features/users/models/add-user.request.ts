@@ -1,4 +1,4 @@
-import { AutoMap } from '@automapper/classes';
+import { AutoMap } from '@vanguard-nx/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MaxLength } from 'class-validator';
 import { USER_NAME_MAX_LEN } from '../../../constants';

@@ -1,6 +1,6 @@
 import { AutoMap } from '@vanguard-nx/core';
 
-export class User {
+export class UserRequest {
   @AutoMap()
   public email: string;
 
@@ -9,4 +9,7 @@ export class User {
 
   @AutoMap()
   public username: string;
+
+  @AutoMap(() => Date)
+  public createdAt: Date;
 }

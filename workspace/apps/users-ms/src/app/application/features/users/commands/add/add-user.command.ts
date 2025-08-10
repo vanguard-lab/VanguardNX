@@ -1,5 +1,4 @@
-import { AutoMap } from '@automapper/classes';
-import { CommandBase } from '@vanguard-nx/core';
+import { AutoMap, CommandBase } from '@vanguard-nx/core';
 
 export class AddUserCommand extends CommandBase {
   @AutoMap()
