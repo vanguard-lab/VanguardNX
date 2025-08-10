@@ -12,13 +12,12 @@
  * @version 1.0.0
  */
 
-import { createMap, Mapper, MappingProfile } from '@automapper/core';
-import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
 import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from '../models';
-import { GetUserQuery } from '../queries';
+import { GetUserQuery, ListUsersQuery } from '../queries';
 import { AddUserCommand } from '../commands';
+import { InjectMapper, ITransmute, MapperProfile } from '@vanguard-nx/core';
 
 /**
  * ┌─────────────────────────────────────────────────────────────────────────┐
@@ -34,13 +33,13 @@ import { AddUserCommand } from '../commands';
  */
 
 @Injectable()
-export class UsersMapperProfile extends AutomapperProfile {
+export class UsersMapperProfile extends MapperProfile {
   /**
    * Creates a new UsersMapperProfile instance.
    *
    * @param mapper - The AutoMapper instance injected by NestJS
    */
-  constructor(@InjectMapper() mapper: Mapper) {
+  constructor(@InjectMapper() protected readonly mapper: ITransmute) {
     super(mapper);
   }
 
@@ -50,12 +49,10 @@ export class UsersMapperProfile extends AutomapperProfile {
    *
    * @returns {MappingProfile} The mapping profile function
    */
-  public override get profile(): MappingProfile {
-    return (mapper) => {
-      this.get(mapper);
-      this.add(mapper);
-      this.response(mapper);
-    };
+  public override configure(): void {
+    this.get();
+    this.add();
+    this.response();
   }
 
   /**
@@ -68,13 +65,14 @@ export class UsersMapperProfile extends AutomapperProfile {
    *
    * @param mapper - The AutoMapper instance
    */
-  private get(mapper: Mapper): void {
-    createMap(mapper, GetUserRequest, GetUserQuery);
+  private get(): void {
+    this.createMap(GetUserRequest, GetUserQuery);
+    this.createMap(ListUsersQuery, User);
   }
 
-  private add(mapper: Mapper): void {
-    createMap(mapper, AddUserRequest, AddUserCommand);
-    createMap(mapper, AddUserCommand, User);
+  private add(): void {
+    this.createMap(AddUserRequest, AddUserCommand);
+    this.createMap(AddUserCommand, User);
   }
 
   /**
@@ -87,8 +85,8 @@ export class UsersMapperProfile extends AutomapperProfile {
    *
    * @param mapper - The AutoMapper instance
    */
-  private response(mapper: Mapper): void {
-    createMap(mapper, User, GetUserResponse);
-    createMap(mapper, User, UserTinyResponse);
+  private response(): void {
+    this.createMap(User, GetUserResponse);
+    this.createMap(User, UserTinyResponse);
   }
 }

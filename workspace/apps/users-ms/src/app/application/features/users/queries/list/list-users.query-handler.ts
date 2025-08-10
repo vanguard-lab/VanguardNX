@@ -1,10 +1,10 @@
-import { QueryHandlerStrict } from '@vanguard-nx/core';
-import { ListUsersQuery } from './list-users.query';
+import { Inject } from '@nestjs/common';
 import { IQueryHandler } from '@nestjs/cqrs';
+import { QueryHandlerStrict } from '@vanguard-nx/core';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { User } from '../../domain';
 import { IUserRepo, USER_REPO } from '../../repositories';
-import { Inject } from '@nestjs/common';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { ListUsersQuery } from './list-users.query';
 
 @QueryHandlerStrict(ListUsersQuery)
 export class ListUsersQueryHandler implements IQueryHandler<ListUsersQuery, User[]> {
@@ -13,6 +13,8 @@ export class ListUsersQueryHandler implements IQueryHandler<ListUsersQuery, User
   public async execute(_query: ListUsersQuery): Promise<User[]> {
     this.logger.info(`Executing Query "${ListUsersQuery.name}"`);
 
-    return this.repo.listUsersAsync();
+    const res = await this.repo.listUsersAsync();
+
+    return res;
   }
 }

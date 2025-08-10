@@ -1,12 +1,12 @@
-import { AutoMap } from '@automapper/classes';
+import { AutoMap } from '@vanguard-nx/core';
 
 export class User {
+  @AutoMap()
+  public email: string;
+
   @AutoMap()
   public id: string;
 
   @AutoMap()
   public username: string;
-
-  @AutoMap()
-  public email: string;
 }

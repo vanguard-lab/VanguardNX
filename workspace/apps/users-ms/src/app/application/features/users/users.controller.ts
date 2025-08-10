@@ -1,9 +1,7 @@
-import { Mapper } from '@automapper/core';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { InjectMapper } from '@automapper/nestjs';
-import { CqrsMediator } from '@vanguard-nx/core';
+import { CqrsMediator, InjectMapper, ITransmute } from '@vanguard-nx/core';
 import { AddUserCommand } from './commands';
 import { User } from './domain';
 import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from './models';
@@ -35,7 +33,7 @@ export class UsersController {
    */
   constructor(
     protected readonly mediator: CqrsMediator,
-    @InjectMapper() protected readonly mapper: Mapper,
+    @InjectMapper() protected readonly mapper: ITransmute,
     @InjectPinoLogger(UsersController.name) protected readonly logger: PinoLogger,
   ) {}
 
