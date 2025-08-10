@@ -1,4 +1,3 @@
-import { Mapper } from '@automapper/core';
 import { isNil } from '@vanguard-nx/utils';
 import { Type } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
@@ -6,11 +5,12 @@ import { ObjectLiteral, Repository } from 'typeorm';
 import { ArgumentNilException } from '../exceptions';
 import { DbException } from './db-exception';
 import { IReadOnlyRepo } from './i-read-only.repo';
+import { ITransmute } from '../mapper';
 
 export abstract class BaseReadOnlyRepo<TEntity extends ObjectLiteral, T, TKey> implements IReadOnlyRepo<T, TKey> {
   constructor(
     protected readonly internalRepo: Repository<TEntity>,
-    protected readonly mapper: Mapper,
+    protected readonly mapper: ITransmute,
     protected readonly logger: PinoLogger,
     protected readonly entityType: Type<TEntity>,
     protected readonly domainType: Type<T>,
