@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [v1.2.0] 2025-08-10
+
+### Breaking Changes
+
+- Replaced AutoMapper library with custom `VanguardTransmute` from `@vanguard-nx/core`, affecting all mapping profiles, commands, queries, and controllers in `users-ms` [[commit]](https://github.com/api-ace/VanguardNX/commit/b77cd89f02fe249c14d489d7be48bf912a3c47a4) [[commit]](https://github.com/api-ace/VanguardNX/commit/44da8251ac2c82442b294e1f8fdaacb36864920d) [[commit]](https://github.com/api-ace/VanguardNX/commit/6c646285871ee34d44f74ee70288f997da9e3443) [[commit]](https://github.com/api-ace/VanguardNX/commit/127479e6f7a8946de760c6e2afa7e0f5e62d5faa):
+  - Mapping profiles now extend `MapperProfile` and use `createMap` from the new system.
+  - Updated imports: `AutoMap`, `CommandHandlerStrict`, `InjectMapper`, `ITransmute` now sourced from `@vanguard-nx/core`.
+  - Renamed `users.mapper.ts` to `users.profile.ts` and refactored to use new mapping API.
+  - Replaced `AutomapperModule` with `VanguardTransmuteModule.forRootAsync()` in `user.module.ts`.
+- Removed `CustomUserMapperProfile` and related custom mappings registration [[commit]](https://github.com/api-ace/VanguardNX/commit/b77cd89f02fe249c14d489d7be48bf912a3c47a4).
+- Removed `EntityMapperProfile` export from infrastructure module [[commit]](https://github.com/api-ace/VanguardNX/commit/127479e6f7a8946de760c6e2afa7e0f5e62d5faa).
+
+### Added
+
+- New custom object mapper implementation in `shared-core-lib/src/lib/mapper/` [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h):
+  - Core classes: `VanguardTransmute`, `MapperProfile`, `MappingConfiguration`, `MappingRegistry`, etc.
+  - Features: Decorator-based mapping (`@AutoMap`), transformation strategy caching, detailed logging, field validation, and custom mapping support.
+  - Added `README.md` with usage examples, API reference, and best practices.
+  - Added `object-transformer.md` explaining caching and performance optimizations.
+- New files in `users-ms` [[commit]](https://github.com/api-ace/VanguardNX/commit/6c646285871ee34d44f74ee70288f997da9e3443) 
+  - `shared/adapters/pino-logger.adapter.ts`: Adapter for `PinoLogger` to implement `ILogger` interface.
+- Exported new mapper utilities from `shared-core-lib/src/index.ts` (e.g., decorators, types, module) [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h).
+- Added debug methods to mapper components (e.g., `debug()` in `VanguardTransmute`) [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h).
+ 
+
+### Changed
+
+- Refactored `users-ms` to use new custom mapper [[commit]](https://github.com/api-ace/VanguardNX/commit/b77cd89f02fe249c14d489d7be48bf912a3c47a4) [[commit]](https://github.com/api-ace/VanguardNX/commit/44da8251ac2c82442b294e1f8fdaacb36864920d) [[commit]](https://github.com/api-ace/VanguardNX/commit/6c646285871ee34d44f74ee70288f997da9e3443) [[commit]](https://github.com/api-ace/VanguardNX/commit/127479e6f7a8946de760c6e2afa7e0f5e62d5faa):
+  - Updated command handlers (e.g., `add-user.command-handler.ts`): Use `ITransmute` instead of `Mapper`.
+  - Updated queries (e.g., `list-users.query-handler.ts`): Minor execution tweaks and import adjustments, removed unnecessary mappings.
+  - Updated controller (`users.controller.ts`): Use `ITransmute` for mapping.
+  - Updated domain model (`user.ts`): Reordered fields and updated `AutoMap` import.
+  - Updated helpers (`users.profile.ts`): Extend `MapperProfile`, use `configure()` method, and add new mappings (e.g., `ListUsersQuery` to `User`).
+  - Updated models: Consistent `AutoMap` imports and extended responses.
+  - Updated infrastructure: Updated entity mappings to use new system, persistence repositories (`user.repo.ts`): Use `ITransmute` instead of `Mapper`.
+- In `shared-core-lib` [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h):
+  - Updated base repos (`base-read-only.repo.ts`, `base.repo.ts`): Use `ITransmute` for mapping.
+  - Added comprehensive types, exceptions, and utilities for the new mapper.
+- Updated `shared-utils-lib` to export additional lodash functions (`map`, `find`) [[commit]](https://github.com/api-ace/VanguardNX/commit/i8j9k0l1m2n3o4p5q6r7s8t9u0v1).
+
+### Fixed
+
+- Improved logging and error handling in the new mapper (e.g., `AutoMapNotFoundException`, `InvalidConstructorException`) [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h).
+- Ensured type safety and caching in transformation logic to prevent redundant computations [[commit]](https://github.com/api-ace/VanguardNX/commit/3e5e0d3d31d49b1d1b7a8c4c2e5f6g7h).
+
+### Dependencies
+
+- Removed: `@automapper/classes@^8.8.1`, `@automapper/core@^8.8.1`, `@automapper/nestjs@^8.8.1` [[commit]](https://github.com/api-ace/VanguardNX/commit/i8j9k0l1m2n3o4p5q6r7s8t9u0v1).
+
+
 ## [v1.0.0] - 2025-05-27
 
 ### Added
