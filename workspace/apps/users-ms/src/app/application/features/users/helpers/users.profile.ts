@@ -14,7 +14,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
-import { AddUserRequest, GetUserRequest, GetUserResponse, UserRequest, UserTinyResponse } from '../models';
+import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from '../models';
 import { GetUserQuery, ListUsersQuery } from '../queries';
 import { AddUserCommand } from '../commands';
 import { InjectMapper, ITransmute, MapperProfile } from '@vanguard-nx/core';
@@ -71,7 +71,6 @@ export class UsersMapperProfile extends MapperProfile {
   }
 
   private add(): void {
-    this.createMap(UserRequest, User);
     this.createMap(AddUserRequest, AddUserCommand);
     this.createMap(AddUserCommand, User);
   }
