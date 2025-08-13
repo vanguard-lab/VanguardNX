@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 
 
+## [v2.0.0] 2025-08-13
+
+### Added
+- Implemented user editing functionality with new `EditUserCommand` and `EditUserCommandHandler` for updating existing user records ([commit](https://github.com/vanguard-lab/VanguardNX/commit/d567657)).
+- Added `EditUserRequest` model to handle user update requests with validation ([commit](https://github.com/vanguard-lab/VanguardNX/commit/54815ad)).
+- Introduced new `/edit` endpoint in `UsersController` for updating user details via PATCH requests ([commit](https://github.com/vanguard-lab/VanguardNX/commit/82de6e9)).
+- Added mapping configurations for `EditUserCommand` and `EditUserRequest` in `UsersMapperProfile` ([commit](https://github.com/vanguard-lab/VanguardNX/commit/1579d7c)).
+- Created new `edit` directory under `commands` with command and handler files ([commit](https://github.com/vanguard-lab/VanguardNX/commit/7f72949)).
+
+### Changed
+- **Breaking Change**: Renamed `VanguardTransmute` to `Mapper` and `ITransmute` to `IMapper` across the codebase for consistency and clarity ([commit](https://github.com/vanguard-lab/VanguardNX/commit/8bc32c9)).
+- Updated `isNilOrEmpty` function in `shared-utils-lib` to improve type safety with explicit return type ([commit](https://github.com/vanguard-lab/VanguardNX/commit/dcb1a3c)).
+- Modified `UsersController` to support new edit functionality and updated mapper interface usage ([commit](https://github.com/vanguard-lab/VanguardNX/commit/82de6e9)).
+- Updated `GetUserQueryHandler` to remove unnecessary non-null assertion for cleaner code ([commit](https://github.com/vanguard-lab/VanguardNX/commit/5550fca)).
+- Refactored repository and mapper files to use new `IMapper` interface ([commit](https://github.com/vanguard-lab/VanguardNX/commit/c5f09d7), [commit](https://github.com/vanguard-lab/VanguardNX/commit/6a99faa), [commit](https://github.com/vanguard-lab/VanguardNX/commit/b6b4b64)).
+- Enhanced `ObjectTransformer` to support mutation operations with new `mutate` and `mutateArray` methods ([commit](https://github.com/vanguard-lab/VanguardNX/commit/5d7688c)).
+
+
+
+
 ## [v1.2.0] 2025-08-10
 
 ### Breaking Changes
