@@ -1,11 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { CqrsMediator, InjectMapper, ITransmute } from '@vanguard-nx/core';
-import { AddUserCommand } from './commands';
+import { CqrsMediator, InjectMapper, IMapper } from '@vanguard-nx/core';
+import { AddUserCommand, EditUserCommand } from './commands';
 import { User } from './domain';
 import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from './models';
 import { GetUserQuery, ListUsersQuery } from './queries';
+import { EditUserRequest } from './models/edit-user.request';
 
 /**
  * Base path and API version for the Users controller.
@@ -33,7 +34,7 @@ export class UsersController {
    */
   constructor(
     protected readonly mediator: CqrsMediator,
-    @InjectMapper() protected readonly mapper: ITransmute,
+    @InjectMapper() protected readonly mapper: IMapper,
     @InjectPinoLogger(UsersController.name) protected readonly logger: PinoLogger,
   ) {}
 
@@ -112,5 +113,30 @@ export class UsersController {
     const result = await this.mediator.execute<AddUserCommand, User>(command);
 
     return this.mapper.map(result, User, UserTinyResponse);
+  }
+
+  /**
+   * Update existing user
+   * 1. Request DTO (EditUserRequest) → Command mapping via AutoMapper
+   * 2. Mediator processes update command through CQRS handler
+   * 3. Updated entity mapped to full response DTO
+   *
+   * @ApiOperation { summary: 'Update User' } - OpenAPI metadata
+   * @ApiOkResponse { type: GetUserResponse } - Response metadata
+   * @HttpCode 200 - OK response
+   * @Patch '/edit' - Partial update endpoint
+   * @param {EditUserRequest} model - Body-validated request DTO
+   * @returns {Promise<GetUserResponse>} - Full user response payload
+   * @throws {MappingError} 500 - If DTO mapping fails
+   * @throws {UserNotFound} 404 - If user does not exist
+   */
+  @ApiOperation({ summary: 'Update User' })
+  @ApiOkResponse({ type: GetUserResponse })
+  @HttpCode(HttpStatus.OK)
+  @Patch('/edit')
+  public async editUser(@Body() model: EditUserRequest): Promise<GetUserResponse> {
+    const command = this.mapper.map(model, EditUserRequest, EditUserCommand);
+    const res = await this.mediator.execute<EditUserCommand, User>(command);
+    return this.mapper.map(res, User, GetUserResponse);
   }
 }

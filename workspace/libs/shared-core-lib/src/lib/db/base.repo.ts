@@ -5,10 +5,10 @@ import { ObjectLiteral, Repository } from 'typeorm';
 import { BaseReadOnlyRepo } from './base-read-only.repo';
 import { DbException } from './db-exception';
 import { IBaseRepo } from './i-base.repo';
-import { ITransmute } from '../mapper';
+import { IMapper } from '../mapper';
 
 export abstract class BaseRepo<TEntity extends ObjectLiteral, T, TKey> extends BaseReadOnlyRepo<TEntity, T, TKey> implements IBaseRepo<T, TKey> {
-  constructor(internalRepo: Repository<TEntity>, mapper: ITransmute, logger: PinoLogger, entityType: Type<TEntity>, domainType: Type<T>) {
+  constructor(internalRepo: Repository<TEntity>, mapper: IMapper, logger: PinoLogger, entityType: Type<TEntity>, domainType: Type<T>) {
     super(internalRepo, mapper, logger, entityType, domainType);
   }
 

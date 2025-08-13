@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { VANGUARD_TRANSMUTE } from './decorators';
 import { Logger } from './logger';
-import { VanguardTransmute } from './transmute';
+import { Mapper } from './mapper';
 import { ObjectMapperModuleAsyncOptions, ObjectMapperModuleOptions } from './types';
 
 @Module({
-  providers: [{ provide: VANGUARD_TRANSMUTE, useClass: VanguardTransmute }],
+  providers: [{ provide: VANGUARD_TRANSMUTE, useClass: Mapper }],
   exports: [VANGUARD_TRANSMUTE],
 })
 /**
@@ -20,7 +20,7 @@ export class VanguardTransmuteModule {
    */
   public static forRoot(options: ObjectMapperModuleOptions = {}): any {
     if (options.logging) Logger.configure(options.logging);
-    return { module: VanguardTransmuteModule, global: true, providers: [{ provide: VANGUARD_TRANSMUTE, useClass: VanguardTransmute }], exports: [VANGUARD_TRANSMUTE] };
+    return { module: VanguardTransmuteModule, global: true, providers: [{ provide: VANGUARD_TRANSMUTE, useClass: Mapper }], exports: [VANGUARD_TRANSMUTE] };
   }
 
   /**
@@ -43,7 +43,7 @@ export class VanguardTransmuteModule {
             return moduleOptions;
           },
         },
-        { provide: VANGUARD_TRANSMUTE, useClass: VanguardTransmute },
+        { provide: VANGUARD_TRANSMUTE, useClass: Mapper },
       ],
       exports: [VANGUARD_TRANSMUTE],
     };

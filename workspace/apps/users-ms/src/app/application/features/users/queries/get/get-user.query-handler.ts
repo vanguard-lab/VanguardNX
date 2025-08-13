@@ -21,6 +21,6 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, User> {
       throw new UserNotFoundException(`User with Id: ${query.id} not found.`);
     }
 
-    return user!;
+    return user;
   }
 }

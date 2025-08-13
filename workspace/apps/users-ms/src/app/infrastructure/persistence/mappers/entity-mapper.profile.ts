@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectMapper, ITransmute, MapperProfile } from '@vanguard-nx/core';
+import { InjectMapper, IMapper, MapperProfile } from '@vanguard-nx/core';
 import { User } from '../../../application';
 import { UserEntity } from '../entities';
 
 @Injectable()
 export class EntityMapperProfile extends MapperProfile {
-  constructor(@InjectMapper() protected readonly mapper: ITransmute) {
+  constructor(@InjectMapper() protected readonly mapper: IMapper) {
     super(mapper);
   }
 

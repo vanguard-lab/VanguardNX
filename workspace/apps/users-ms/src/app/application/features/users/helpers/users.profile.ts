@@ -16,8 +16,9 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
 import { AddUserRequest, GetUserRequest, GetUserResponse, UserTinyResponse } from '../models';
 import { GetUserQuery, ListUsersQuery } from '../queries';
-import { AddUserCommand } from '../commands';
-import { InjectMapper, ITransmute, MapperProfile } from '@vanguard-nx/core';
+import { AddUserCommand, EditUserCommand } from '../commands';
+import { InjectMapper, IMapper, MapperProfile } from '@vanguard-nx/core';
+import { EditUserRequest } from '../models/edit-user.request';
 
 /**
  * ┌─────────────────────────────────────────────────────────────────────────┐
@@ -39,7 +40,7 @@ export class UsersMapperProfile extends MapperProfile {
    *
    * @param mapper - The AutoMapper instance injected by NestJS
    */
-  constructor(@InjectMapper() protected readonly mapper: ITransmute) {
+  constructor(@InjectMapper() protected readonly mapper: IMapper) {
     super(mapper);
   }
 
@@ -52,6 +53,7 @@ export class UsersMapperProfile extends MapperProfile {
   public override configure(): void {
     this.get();
     this.add();
+    this.edit();
     this.response();
   }
 
@@ -73,6 +75,11 @@ export class UsersMapperProfile extends MapperProfile {
   private add(): void {
     this.createMap(AddUserRequest, AddUserCommand);
     this.createMap(AddUserCommand, User);
+  }
+
+  private edit(): void {
+    this.createMap(EditUserRequest, EditUserCommand);
+    this.createMap(EditUserCommand, User);
   }
 
   /**

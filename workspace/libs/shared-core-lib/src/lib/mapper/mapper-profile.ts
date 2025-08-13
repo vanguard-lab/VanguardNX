@@ -1,4 +1,4 @@
-import { ClassIdentifier, Dictionary, ITransmute } from './types';
+import { ClassIdentifier, Dictionary, IMapper } from './types';
 import { Logger } from './logger';
 import { MappingConfiguration } from './mapping-configuration';
 
@@ -8,9 +8,9 @@ import { MappingConfiguration } from './mapping-configuration';
 export abstract class MapperProfile {
   /**
    * Creates a new MapperProfile instance.
-   * @param {ITransmute} mapper - The ObjectMapper instance
+   * @param {IMapper} mapper - The ObjectMapper instance
    */
-  constructor(protected readonly mapper: ITransmute) {
+  constructor(protected readonly mapper: IMapper) {
     this.configure();
   }
 

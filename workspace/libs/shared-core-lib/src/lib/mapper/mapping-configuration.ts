@@ -1,7 +1,7 @@
 import { PropertyKeyExtractionException } from './exceptions';
 import { Logger } from './logger';
 import { MappingEntry } from './mapping-entry';
-import { Dictionary, ITransmute } from './types';
+import { Dictionary, IMapper } from './types';
 
 /**
  * Represents a mapping configuration between source and target classes.
@@ -12,9 +12,9 @@ export class MappingConfiguration<TSource extends Dictionary<TSource>, TDestinat
   /**
    * Creates a new MappingConfiguration instance.
    * @param {MappingEntry} entry - The mapping entry
-   * @param {ITransmute} mapper - The ObjectMapper instance
+   * @param {IMapper} mapper - The ObjectMapper instance
    */
-  constructor(private readonly entry: MappingEntry, private readonly mapper: ITransmute) {}
+  constructor(private readonly entry: MappingEntry, private readonly mapper: IMapper) {}
 
   /**
    * Configures a custom mapping for a destination member.
