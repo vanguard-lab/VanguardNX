@@ -1,7 +1,7 @@
-import { ClassIdentifier, Dictionary } from './common';
+import { ClassIdentifier, Constructor, Dictionary } from './common';
 import { IMappingEntry } from './i-mapping-entry';
 
-export interface ITransmute {
+export interface IMapper {
   /**
    * Creates a mapping between source and target classes in the registry.
    * Establishes the relationship required for subsequent transformations.
@@ -35,6 +35,22 @@ export interface ITransmute {
     targetClass: ClassIdentifier<TDestination>,
   ): TDestination;
 
+  /**
+   * Mutates target object instance with values from source object.
+   * @template TSourceClass - Source class type
+   * @template TDestinationClass - Destination class type
+   * @param {InstanceType<TSourceClass>} source - Source object to read values from
+   * @param {InstanceType<TDestinationClass>} target - Target object to mutate
+   * @param {TSourceClass} sourceClass - Source class identifier
+   * @param {TDestinationClass} targetClass - Target class identifier
+   * @returns {InstanceType<TDestinationClass>} The mutated target object (same reference)
+   */
+  mutate<TSourceClass extends Constructor, TDestinationClass extends Constructor>(
+    source: InstanceType<TSourceClass>,
+    target: InstanceType<TDestinationClass>,
+    sourceClass: TSourceClass,
+    targetClass: TDestinationClass,
+  ): InstanceType<TDestinationClass>;
   /**
    * Transforms an array of source objects to target class instances.
    * Optimizes batch transformations by reusing validation and mapping data.

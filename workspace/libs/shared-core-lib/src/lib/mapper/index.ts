@@ -9,4 +9,4 @@ export * from './object-transformer';
 export * from './symbol-registry';
 export * from './types';
 
-export { ITransmute } from './types';
+export { IMapper as ITransmute } from './types';
