@@ -4,7 +4,7 @@ import { Logger } from './logger';
 import { MappingEntry } from './mapping-entry';
 import { MappingRegistry } from './mapping-registry';
 import { ObjectTransformer } from './object-transformer';
-import { ClassIdentifier, Dictionary, ITransmute } from './types';
+import { ClassIdentifier, Constructor, Dictionary, IMapper } from './types';
 import { isArray } from '@vanguard-nx/utils';
 import { AutoMapNotFoundException, InvalidArrayInputException } from './exceptions';
 
@@ -13,7 +13,7 @@ import { AutoMapNotFoundException, InvalidArrayInputException } from './exceptio
  * @injectable
  */
 @Injectable()
-export class VanguardTransmute implements ITransmute {
+export class Mapper implements IMapper {
   private readonly registry: MappingRegistry;
 
   /**
@@ -22,6 +22,19 @@ export class VanguardTransmute implements ITransmute {
   constructor() {
     this.registry = new MappingRegistry();
     Logger.log('[ObjectMapper] Service initialized');
+  }
+
+  public mutate<TSource extends Dictionary<TSource>, TDestination extends Dictionary<TDestination>>(
+    source: TSource,
+    target: TDestination,
+    sourceClass: ClassIdentifier<TSource>,
+    targetClass: ClassIdentifier<TDestination>,
+  ): TDestination {
+    Logger.log(`[ObjectMapper] Starting mutation... from ${sourceClass.name}[${sourceClass}] to ${targetClass.name}[${targetClass}]`);
+
+    const { sourceConstructor, targetConstructor, validation, customMappings } = this.prepareMutation(sourceClass, targetClass);
+
+    return ObjectTransformer.mutate(source, target, sourceConstructor, targetConstructor, validation.mappableFields, customMappings, this);
   }
 
   /**
@@ -108,20 +121,21 @@ export class VanguardTransmute implements ITransmute {
   }
 
   /**
-   * Prepares mapping data for transformation.
+   * Core preparation logic shared between mapping and mutation operations.
    * @template TSource
    * @template TDestination
    * @param {ClassIdentifier<TSource>} sourceClass - Source class identifier
    * @param {ClassIdentifier<TDestination>} targetClass - Target class identifier
-   * @returns {Object} Object containing targetConstructor, validation, and customMappings
+   * @returns {Object} Object containing all preparation data
    * @throws {Error} If classes are not registered or no mapping exists
    * @private
    */
-  private prepareMapping<TSource, TDestination>(
+  private prepareMaps<TSource, TDestination>(
     sourceClass: ClassIdentifier<TSource>,
     targetClass: ClassIdentifier<TDestination>,
   ): {
-    targetConstructor: new () => TDestination;
+    sourceConstructor: Constructor<TSource>;
+    targetConstructor: Constructor<TDestination>;
     validation: ReturnType<typeof FieldValidator.validateMappedFields>;
     customMappings: Map<string, (source: any) => any> | undefined;
   } {
@@ -141,6 +155,49 @@ export class VanguardTransmute implements ITransmute {
     const validation = FieldValidator.validateMappedFields(sourceConstructor, targetConstructor, this.registry);
     const customMappings = this.registry.getCustomMappings(sourceSymbol);
 
+    return { sourceConstructor, targetConstructor, validation, customMappings };
+  }
+
+  /**
+   * Prepares mapping data for mutation operations.
+   * @template TSource
+   * @template TDestination
+   * @param {ClassIdentifier<TSource>} sourceClass - Source class identifier
+   * @param {ClassIdentifier<TDestination>} targetClass - Target class identifier
+   * @returns {Object} Object containing sourceConstructor, targetConstructor, validation, and customMappings
+   * @throws {Error} If classes are not registered or no mapping exists
+   * @private
+   */
+  private prepareMutation<TSource, TDestination>(
+    sourceClass: ClassIdentifier<TSource>,
+    targetClass: ClassIdentifier<TDestination>,
+  ): {
+    sourceConstructor: Constructor<TSource>;
+    targetConstructor: Constructor<TDestination>;
+    validation: ReturnType<typeof FieldValidator.validateMappedFields>;
+    customMappings: Map<string, (source: any) => any> | undefined;
+  } {
+    return this.prepareMaps(sourceClass, targetClass);
+  }
+
+  /* Prepares mapping data for transformation.
+   * @template TSource
+   * @template TDestination
+   * @param {ClassIdentifier<TSource>} sourceClass - Source class identifier
+   * @param {ClassIdentifier<TDestination>} targetClass - Target class identifier
+   * @returns {Object} Object containing targetConstructor, validation, and customMappings
+   * @throws {Error} If classes are not registered or no mapping exists
+   * @private
+   */
+  private prepareMapping<TSource, TDestination>(
+    sourceClass: ClassIdentifier<TSource>,
+    targetClass: ClassIdentifier<TDestination>,
+  ): {
+    targetConstructor: new () => TDestination;
+    validation: ReturnType<typeof FieldValidator.validateMappedFields>;
+    customMappings: Map<string, (source: any) => any> | undefined;
+  } {
+    const { targetConstructor, validation, customMappings } = this.prepareMaps(sourceClass, targetClass);
     return { targetConstructor, validation, customMappings };
   }
 }
