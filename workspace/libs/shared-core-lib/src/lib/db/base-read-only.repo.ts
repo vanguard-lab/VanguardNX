@@ -5,12 +5,12 @@ import { ObjectLiteral, Repository } from 'typeorm';
 import { ArgumentNilException } from '../exceptions';
 import { DbException } from './db-exception';
 import { IReadOnlyRepo } from './i-read-only.repo';
-import { ITransmute } from '../mapper';
+import { IMapper } from '../mapper';
 
 export abstract class BaseReadOnlyRepo<TEntity extends ObjectLiteral, T, TKey> implements IReadOnlyRepo<T, TKey> {
   constructor(
     protected readonly internalRepo: Repository<TEntity>,
-    protected readonly mapper: ITransmute,
+    protected readonly mapper: IMapper,
     protected readonly logger: PinoLogger,
     protected readonly entityType: Type<TEntity>,
     protected readonly domainType: Type<T>,
