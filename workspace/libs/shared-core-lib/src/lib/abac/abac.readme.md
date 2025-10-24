@@ -215,7 +215,6 @@ conditions()
 - **IConditionGroup**: Supports nested AND/OR logic.
 - **IPolicy**: Defines policy attributes (ID, permission, effect, conditions, etc.).
 - **EConditionOperator**: Enum for comparison operators (`eq`, `neq`, `gt`, `lt`, `in`, etc.).
-- **EResource**: Enum for resource types (e.g., `user`).
 
 ## Use Cases
 
