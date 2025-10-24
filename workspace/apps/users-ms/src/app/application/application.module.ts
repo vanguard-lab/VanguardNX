@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CommandHandlers, Controllers, MappingProfiles, QueryHandlers } from './features';
+import { CommandHandlers, Controllers, MappingProfiles, QueryHandlers, USER_ABAC_SERVICE, UserAbacService } from './features';
 
 @Module({})
 export class ApplicationModule {
@@ -10,7 +10,16 @@ export class ApplicationModule {
       module: ApplicationModule,
       imports: [CqrsModule],
       controllers: [...Controllers],
-      providers: [...QueryHandlers, ...CommandHandlers, ...MappingProfiles],
+      providers: [
+        ...QueryHandlers,
+        ...CommandHandlers,
+        ...MappingProfiles,
+
+        {
+          provide: USER_ABAC_SERVICE,
+          useClass: UserAbacService,
+        },
+      ],
     };
   }
 }
