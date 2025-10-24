@@ -1,0 +1,17 @@
+export enum EConditionOperator {
+  Eq = 'eq',
+  Neq = 'neq',
+  Gt = 'gt',
+  Gte = 'gte',
+  Lt = 'lt',
+  Lte = 'lte',
+  In = 'in',
+  NotIn = 'notIn',
+  Contains = 'contains',
+  StartsWith = 'startsWith',
+  EndsWith = 'endsWith',
+  Exists = 'exists',
+  NotExists = 'notExists',
+  Between = 'between',
+  Matches = 'matches',
+}

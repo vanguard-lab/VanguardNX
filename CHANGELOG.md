@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 
 
+## [v2.1.0] 2025-10-24
+
+### Added
+
+* Implemented a **robust ABAC (Attribute-Based Access Control)** system in `shared-core-lib`, introducing `AbacService`, `PolicyBuilder`, and `ConditionChain` for flexible, policy-driven authorization ([commit](https://github.com/vanguard-lab/VanguardNX/commit/a6804aba5748a395373ae907f3b802335fba49ca)).
+* Integrated **ABAC policy enforcement** into the `users-ms` service with `UserAbacService`, domain-specific policies, and action/resource enums ([commit](https://github.com/vanguard-lab/VanguardNX/commit/5a61aec8b5041d63ba95d6ecb73b98de5aa75b05)).
+
+### Changed
+
+* Registered `USER_ABAC_SERVICE` provider in `ApplicationModule` to enable injection via string token.
+* Updated `ListUsersQueryHandler` to perform ABAC-based authorization for user listing.
+
+### Removed
+
+* Deleted unused `EResource` enum and related references from core library ([commit](https://github.com/vanguard-lab/VanguardNX/commit/1589804d804b19f4dd5ed499d6ef6e1995132f58)).
+
+
 ## [v2.0.0] 2025-08-13
 
 ### Added
